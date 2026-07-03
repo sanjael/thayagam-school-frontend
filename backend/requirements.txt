@@ -1,0 +1,12 @@
+sqlalchemy
+pymysql
+cryptography
+fastapi
+uvicorn[standard]
+python-jose[cryptography]
+passlib[bcrypt]
+python-multipart
+pydantic[email]
+pillow
+reportlab
+python-dotenv
