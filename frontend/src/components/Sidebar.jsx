@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { useApp } from '../AppContext';
 import { useAuth } from '../AuthContext';
+import { api } from '../api';
 
 const nav = [
   { 
@@ -80,30 +82,44 @@ const nav = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onClose }) {
   const { t } = useApp();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const [logoUrl, setLogoUrl] = useState('');
+
+  useEffect(() => {
+    async function fetchLogo() {
+      try {
+        const s = await api.getSettings();
+        if (s?.logo_path) {
+          setLogoUrl(`http://localhost:8000/${s.logo_path}`);
+        }
+      } catch (err) {
+        console.error('Failed to load settings', err);
+      }
+    }
+    fetchLogo();
+  }, []);
 
   return (
-    <aside className="flex h-screen w-64 flex-col bg-slate-900 border-r border-amber-500/20 text-slate-100 shadow-2xl z-20">
+    <aside className="flex h-screen w-72 flex-col bg-[#02021c] border-r border-[#02021c] text-slate-100 shadow-2xl z-20">
       {/* Brand Header */}
-      <div className="px-6 py-6 border-b border-slate-800 flex flex-col items-center text-center gap-2">
-        <div className="w-12 h-12 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex items-center justify-center text-amber-500 font-bold text-xl shadow-lg">
-          🏫
+      <div className="px-6 py-8 flex flex-col items-center text-center gap-2">
+        <div className="w-16 h-16 bg-white border-[2.5px] border-[#efc000] rounded-2xl flex items-center justify-center shadow-lg overflow-hidden p-1">
+          {logoUrl ? (
+            <img src={logoUrl} alt="Institution Logo" className="w-full h-full object-contain" />
+          ) : (
+            <span className="text-[#efc000] font-bold text-2xl">🏫</span>
+          )}
         </div>
-        <div className="mt-1">
-          <p className="text-xs font-semibold uppercase tracking-widest text-amber-500/80">THAYAGAM ACADEMY</p>
-          <p className="mt-0.5 text-sm font-medium text-slate-400">
-            {user?.role === 'admin' ? 'Fee Administrator' :
-             user?.role === 'principal' ? 'Principal View' :
-             user?.role === 'accountant' ? 'Accountant' :
-             'Staff'}
-          </p>
+        <div className="mt-3">
+          <p className="text-[18px] font-bold uppercase tracking-[0.15em] text-white">THAYAGAM</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.25em] text-[#efc000] mt-1">ACADEMY</p>
         </div>
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 space-y-1.5 px-4 py-6 overflow-y-auto">
+      <nav className="flex-1 space-y-1.5 px-4 py-2 overflow-y-auto">
         {nav.map((item) => {
           if (item.adminOnly && user?.role !== 'admin') return null;
           return (
@@ -111,12 +127,13 @@ export default function Sidebar() {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3.5 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 group ${
+                `flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all duration-200 group ${
                   isActive
-                    ? 'bg-amber-500 text-slate-950 font-semibold shadow-lg shadow-amber-500/15'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                    ? 'bg-[#efc000] text-[#02021c] shadow-md'
+                    : 'text-slate-300 hover:bg-[#111133] hover:text-white'
                 }`
               }
+              onClick={() => onClose && onClose()}
             >
               <span className="transition-transform duration-200 group-hover:scale-110">{item.icon}</span>
               {item.labelKey === 'auditLogs' ? 'Audit Logs' : t(item.labelKey)}
@@ -125,9 +142,39 @@ export default function Sidebar() {
         })}
       </nav>
 
+      {/* User Profile / Admin Info */}
+      {user && (
+        <div className="px-4 mt-2">
+          <div className="bg-[#0b0b2b] rounded-2xl p-3 flex items-center gap-4 border border-white/5">
+            <div className="w-10 h-10 rounded-xl bg-[#02021c] flex items-center justify-center text-[#efc000] font-bold text-lg border border-[#efc000]/20">
+              {user.role === 'admin' ? 'A' : user.role === 'principal' ? 'P' : user.role === 'accountant' ? 'Ac' : 'S'}
+            </div>
+            <div className="flex-1 overflow-hidden">
+              <p className="text-sm font-bold text-white truncate">{user.username || user.role}</p>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest font-semibold mt-0.5">{user.role}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sign Out Button */}
+      <div className="px-4 py-3">
+         <button 
+           onClick={() => logout && logout()}
+           className="flex items-center gap-4 rounded-xl px-4 py-3.5 text-sm font-semibold transition-all duration-200 group text-slate-300 hover:bg-[#111133] hover:text-white w-full"
+         >
+            <svg className="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Sign Out
+         </button>
+      </div>
+
       {/* Footer Info */}
-      <div className="p-4 border-t border-slate-800 text-center text-[10px] text-slate-500 font-mono tracking-wider">
-        SYSTEM v1.0.0
+      <div className="px-4 pb-6 border-t border-white/5 pt-4 text-center">
+        <p className="text-[9px] text-slate-500 font-medium tracking-[0.1em] uppercase leading-relaxed">
+          THAYAGAM ACADEMY<br/>SYSTEM v1.0.0
+        </p>
       </div>
     </aside>
   );

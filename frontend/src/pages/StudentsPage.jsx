@@ -127,6 +127,78 @@ export default function StudentsPage() {
 
   const f = (k) => (e) => setForm((p) => ({ ...p, [k]: e.target.value }));
 
+  const handleExportSelected = () => {
+    const selectedStudents = students.filter(s => selectedIds.includes(s.id));
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + "Adm No,Name,Class,Parent Name,Phone,Status\n"
+      + selectedStudents.map(s => `${s.admission_no},${s.name},${s.class_name},${s.parent_name || ''},${s.phone || ''},${s.status}`).join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "students_export.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleBulkDeactivate = async () => {
+    if (!window.confirm(`Are you sure you want to deactivate ${selectedIds.length} selected students?`)) return;
+    try {
+      const selectedStudents = students.filter(s => selectedIds.includes(s.id));
+      await Promise.all(selectedStudents.map(s => {
+        const payload = {
+          admission_no: s.admission_no, name: s.name, class_id: Number(s.class_id),
+          gender: s.gender || '', dob: s.dob || null, parent_name: s.parent_name || '',
+          phone: s.phone || '', address: s.address || '', status: 'Inactive'
+        };
+        return api.updateStudent(s.id, payload);
+      }));
+      load();
+      setSelectedIds([]);
+    } catch (err) {
+      alert("Error deactivating students: " + err.message);
+    }
+  };
+
+  const handlePrintIDCards = () => {
+    const selectedStudents = students.filter(s => selectedIds.includes(s.id));
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Print ID Cards</title>
+          <style>
+            body { font-family: sans-serif; }
+            .id-card { border: 2px solid #1e293b; border-radius: 12px; width: 3.375in; height: 2.125in; padding: 15px; margin: 10px; display: inline-block; text-align: center; box-sizing: border-box; position: relative; overflow: hidden; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .header-bg { position: absolute; top: 0; left: 0; right: 0; height: 40px; background-color: #02021c; z-index: 1; }
+            .school-name { font-weight: bold; font-size: 12px; color: #efc000; position: relative; z-index: 2; margin-top: -5px; letter-spacing: 1px; text-transform: uppercase; }
+            .student-name { font-weight: 900; font-size: 18px; margin-top: 25px; margin-bottom: 8px; color: #0f172a; text-transform: uppercase; }
+            .detail { font-size: 11px; margin-bottom: 4px; color: #475569; font-weight: 600; text-align: left; padding-left: 20px; }
+            .footer { position: absolute; bottom: 0; left: 0; right: 0; height: 15px; background-color: #efc000; }
+          </style>
+        </head>
+        <body>
+          ${selectedStudents.map(s => `
+            <div class="id-card">
+              <div class="header-bg"></div>
+              <div class="school-name">THAYAGAM ACADEMY</div>
+              <div class="student-name">${s.name}</div>
+              <div class="detail">Adm No: &nbsp;&nbsp;<b>${s.admission_no}</b></div>
+              <div class="detail">Class: &nbsp;&nbsp;&nbsp;&nbsp;<b>${s.class_name}</b></div>
+              <div class="detail">Parent: &nbsp;&nbsp;<b>${s.parent_name || 'N/A'}</b></div>
+              <div class="detail">Phone: &nbsp;&nbsp;<b>${s.phone || 'N/A'}</b></div>
+              <div class="footer"></div>
+            </div>
+          `).join('')}
+          <script>
+            window.onload = () => { setTimeout(() => { window.print(); window.close(); }, 500); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   return (
     <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
@@ -233,14 +305,14 @@ export default function StudentsPage() {
                 <span className="bg-white dark:bg-amber-950 px-2 py-0.5 rounded-lg shadow-sm border border-amber-200 dark:border-amber-800 mr-1">{selectedIds.length}</span> students selected
               </span>
               <div className="flex gap-2">
-                <button className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
+                <button onClick={handlePrintIDCards} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
                   🖨 Print ID Cards
                 </button>
-                <button className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
+                <button onClick={handleExportSelected} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
                   📊 Export Selected
                 </button>
                 {user?.role === 'admin' && (
-                  <button className="px-3 py-1.5 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition shadow-sm">
+                  <button onClick={handleBulkDeactivate} className="px-3 py-1.5 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition shadow-sm">
                     Deactivate
                   </button>
                 )}

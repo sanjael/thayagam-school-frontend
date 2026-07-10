@@ -14,6 +14,7 @@ export default function Layout({ children }) {
     t 
   } = useApp();
   
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [settings, setSettings] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -160,17 +161,36 @@ export default function Layout({ children }) {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 print:h-auto print:overflow-visible">
-      <div className="print:hidden h-full">
-        <Sidebar />
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 print:h-auto print:overflow-visible relative w-full">
+      
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 md:hidden backdrop-blur-sm transition-opacity"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`print:hidden h-full fixed md:relative z-40 transition-transform duration-300 md:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <Sidebar onClose={() => setIsSidebarOpen(false)} />
       </div>
       
-      <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible">
+      <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible min-w-0">
         {/* Sticky Header */}
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-6 shadow-sm z-30 print:hidden">
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 sm:px-6 shadow-sm z-20 print:hidden flex-shrink-0">
           
           {/* Logo / Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Hamburger Menu (Mobile) */}
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition mr-1"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
             {settings?.logo_path ? (
               <img 
                 src={`http://localhost:8000/${settings.logo_path}`} 
@@ -198,7 +218,7 @@ export default function Layout({ children }) {
           </div>
 
           {/* Global Search Bar */}
-          <div ref={searchContainerRef} className="relative flex-1 max-w-xs mx-4">
+          <div ref={searchContainerRef} className="relative flex-1 max-w-[160px] sm:max-w-xs mx-2 sm:mx-4 hidden sm:block">
             <div className="relative">
               <input
                 type="text"
@@ -234,7 +254,7 @@ export default function Layout({ children }) {
           </div>
 
           {/* Controls & Badges */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 ml-auto">
             
             {/* Language Switch */}
             <div className="flex bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-full p-0.5 text-[10px] font-bold">
