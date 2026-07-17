@@ -454,22 +454,9 @@ export default function PaymentsPage() {
                             <button onClick={() => setPreviewReceipt(p)} className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                               <span className="text-base"></span> View Receipt
                             </button>
-                            <button className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                              <span className="text-base">️</span> Edit Payment
-                            </button>
-                            <button className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                              <span className="text-base"></span> Issue Refund
-                            </button>
                             <a href={api.receiptPdfUrl(p.id)} target="_blank" rel="noreferrer" className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                               <span className="text-base">⬇</span> Download PDF
                             </a>
-                            
-                            <div className="border-t border-slate-100 dark:border-slate-700 p-2">
-                              <h4 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1 ml-3 mt-1">Print Format</h4>
-                              <button className="w-full px-5 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-left">A4 Receipt</button>
-                              <button className="w-full px-5 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-left">A5 Receipt</button>
-                              <button className="w-full px-5 py-2 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-lg text-left">Thermal Receipt</button>
-                            </div>
                             
                             <div className="border-t border-slate-100 dark:border-slate-700 p-2 bg-slate-50 dark:bg-slate-900/50">
                               <button onClick={() => {
@@ -479,8 +466,12 @@ export default function PaymentsPage() {
                               }} className="w-full px-4 py-2.5 text-xs font-bold text-emerald-600 hover:bg-emerald-100 rounded-xl flex items-center gap-2 transition">
                                 <MessageCircle size={16} /> WhatsApp Receipt
                               </button>
-                              <button onClick={() => alert("Email Receipt Sent!")} className="w-full px-4 py-2.5 text-xs font-bold text-blue-600 hover:bg-blue-100 rounded-xl flex items-center gap-2 transition mt-1">
-                                <span className="text-base">️</span> Email Receipt
+                              <button onClick={() => {
+                                const subject = encodeURIComponent(`Fee Receipt - ${p.student_name} - Sri Thayagam Matriculation School`);
+                                const body = encodeURIComponent(`Dear Parent,\n\nWe have successfully received the fee payment for your ward, ${p.student_name}.\n\nReceipt No: ${p.receipt_no}\nAmount Paid: ₹${p.amount_paid}\nDate: ${p.payment_date}\n\nYou can download the PDF receipt using this link: ${window.location.origin}/api/payments/${p.id}/receipt/pdf\n\nThank you for your prompt payment!\nSri Thayagam Matriculation School`);
+                                window.location.href = `mailto:?subject=${subject}&body=${body}`;
+                              }} className="w-full px-4 py-2.5 text-xs font-bold text-blue-600 hover:bg-blue-100 rounded-xl flex items-center gap-2 transition mt-1">
+                                <span className="text-base">✉️</span> Email Receipt
                               </button>
                             </div>
 
