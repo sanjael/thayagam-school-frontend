@@ -200,12 +200,42 @@ export default function StudentsPage() {
     printWindow.document.close();
   };
 
+  function exportToCSV() {
+    if (students.length === 0) {
+      alert("No students to export.");
+      return;
+    }
+    const headers = ["Adm No", "Student Name", "Class", "Parent Name", "Phone", "Status", "Gender", "Fee Route", "Transport Route"];
+    const rows = filteredStudents.map(s => [
+      s.admission_no || '',
+      s.name || '',
+      s.class_name || '',
+      s.parent_name || '',
+      s.phone || '',
+      s.status || 'Active',
+      s.gender || '',
+      s.fee_route || '',
+      s.transport_route || ''
+    ]);
+    
+    const csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `students_export_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
   return (
     <Layout>
       <div className="space-y-6 max-w-7xl mx-auto">
         
         {/* Quick Filter Bar */}
-        <div className="flex flex-wrap gap-2 mb-2">
+        <div className="flex flex-wrap gap-2 mb-2 print:hidden">
           {['All', 'Active', 'Inactive', 'New Admissions', 'Fee Pending'].map(qf => (
             <button 
               key={qf} 
@@ -222,7 +252,7 @@ export default function StudentsPage() {
         </div>
 
         {/* Top Statistics Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 print:hidden">
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center">
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Total Students</p>
             <p className="text-2xl font-black text-slate-900 dark:text-white">{stats.total}</p>
@@ -245,14 +275,14 @@ export default function StudentsPage() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-6 border-b border-slate-100 dark:border-slate-800">
             <div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">{t('students')}</h1>
-              <p className="text-xs text-slate-500 mt-1">Manage and view student information</p>
+              <p className="text-xs text-slate-500 mt-1 print:hidden">Manage and view student information</p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 print:hidden">
               <button onClick={() => window.print()} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
                  <FileText size={16} /> Export PDF
               </button>
-              <button onClick={() => alert('Export to Excel will be available in the next update!')} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
-                 <FileSpreadsheet size={16} /> Export Excel
+              <button onClick={exportToCSV} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
+                 <FileSpreadsheet size={16} /> Export CSV
               </button>
               {user?.role !== 'principal' && (
                 <button
@@ -266,7 +296,7 @@ export default function StudentsPage() {
           </div>
 
           {/* Search & Filters */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-4 gap-3 print:hidden">
             <div className="md:col-span-1">
               <input
                 value={search} onChange={(e) => setSearch(e.target.value)}
@@ -301,7 +331,7 @@ export default function StudentsPage() {
 
           {/* Bulk Actions Menu */}
           {selectedIds.length > 0 && (
-            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/50 flex flex-wrap items-center justify-between gap-3 animate-fade-in">
+            <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800/50 flex flex-wrap items-center justify-between gap-3 animate-fade-in print:hidden">
               <span className="text-xs font-bold text-amber-800 dark:text-amber-500 ml-2">
                 <span className="bg-white dark:bg-amber-950 px-2 py-0.5 rounded-lg shadow-sm border border-amber-200 dark:border-amber-800 mr-1">{selectedIds.length}</span> students selected
               </span>
@@ -326,7 +356,7 @@ export default function StudentsPage() {
             <table className="w-full min-w-max text-left text-sm text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950 text-[10px] text-slate-400 font-bold uppercase tracking-wider sticky top-0 z-20 shadow-sm border-b border-slate-100 dark:border-slate-800 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-slate-200 dark:after:bg-slate-800">
                 <tr>
-                  <th className="px-4 py-3.5 w-10 text-center">
+                  <th className="px-4 py-3.5 w-10 text-center print:hidden">
                     <input 
                       type="checkbox" 
                       className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
@@ -340,7 +370,7 @@ export default function StudentsPage() {
                   <th className="px-5 py-3.5">{t('parentName')}</th>
                   <th className="px-5 py-3.5">{t('phone')}</th>
                   <th className="px-5 py-3.5 text-center">Status</th>
-                  <th className="px-5 py-3.5 text-center">{t('actionsCol')}</th>
+                  <th className="px-5 py-3.5 text-center print:hidden">{t('actionsCol')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800 bg-white dark:bg-slate-900">
@@ -349,7 +379,7 @@ export default function StudentsPage() {
                     key={s.id} 
                     className={`hover:bg-amber-50/50 dark:hover:bg-slate-800/80 transition-colors group ${index % 2 === 0 ? 'bg-white dark:bg-slate-900' : 'bg-slate-50/50 dark:bg-slate-900/50'} ${selectedIds.includes(s.id) ? 'bg-amber-50/30 dark:bg-amber-900/10' : ''}`}
                   >
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-center print:hidden">
                       <input 
                         type="checkbox"
                         className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 cursor-pointer"
@@ -396,7 +426,7 @@ export default function StudentsPage() {
                         {s.status}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-center">
+                    <td className="px-5 py-3 text-center print:hidden">
                       <div className="flex items-center justify-center gap-2">
                         <button onClick={() => setViewStudent(s)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition" title="View Profile">
                           <Eye size={16} />
@@ -441,7 +471,7 @@ export default function StudentsPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800">
+            <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50 dark:bg-slate-900/50 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 print:hidden">
               <span className="text-xs font-bold text-slate-500">
                 Showing {((currentPage - 1) * pageSize) + 1}–{Math.min(currentPage * pageSize, filteredStudents.length)} of {filteredStudents.length} students
               </span>
@@ -477,7 +507,7 @@ export default function StudentsPage() {
 
         {/* View Profile Modal */}
         {viewStudent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in print:hidden">
             <div className="w-full max-w-md rounded-[2rem] bg-white dark:bg-slate-900 shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden relative">
               <div className="bg-amber-500 h-28 relative flex items-center p-6">
                 <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white dark:bg-slate-900 rounded-full border-[5px] border-white dark:border-slate-900 flex items-center justify-center shadow-lg">
@@ -533,7 +563,7 @@ export default function StudentsPage() {
 
         {/* Add/Edit Form Modal */}
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in print:hidden">
             <div className="w-full max-w-lg rounded-[2rem] bg-white dark:bg-slate-900 p-7 shadow-2xl border border-slate-100 dark:border-slate-800 relative max-h-[95vh] overflow-y-auto custom-scrollbar">
               <div className="flex justify-between items-center pb-5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
                 <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
