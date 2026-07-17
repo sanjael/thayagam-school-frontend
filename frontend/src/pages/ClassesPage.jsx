@@ -127,22 +127,22 @@ export default function ClassesPage() {
               onClick={() => setShowAddForm(true)}
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-6 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center gap-2"
             >
-              <span className="text-lg"></span> Add New Class
+              <span className="text-lg">➕</span> Add New Class
             </button>
           )}
         </div>
 
         {/* Top Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-colors">
-            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center text-2xl"></div>
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-colors">
+            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-inner">🏫</div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Classes</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">{uniqueClassesCount}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
-            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center text-2xl">‍</div>
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
+            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center text-2xl shadow-inner">🧑‍🎓</div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Students</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">{totalStudents}</p>

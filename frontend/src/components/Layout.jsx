@@ -223,9 +223,9 @@ export default function Layout({ children }) {
                 onChange={(e) => { setSearchQuery(e.target.value); setShowSearchResults(true); }}
                 onFocus={() => setShowSearchResults(true)}
                 placeholder={t('studentSearchPlaceholder')}
-                className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-1.5 pl-9 text-xs outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-slate-100 placeholder-slate-400"
+                className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-1.5 pl-9 text-xs outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-slate-100 placeholder-slate-500 transition shadow-inner"
               />
-              <span className="absolute left-3 top-2 text-slate-400">
+              <span className="absolute left-3 top-2 text-slate-500">
                 <Search size={14} />
               </span>
             </div>

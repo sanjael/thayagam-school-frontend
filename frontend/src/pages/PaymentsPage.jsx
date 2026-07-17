@@ -277,36 +277,27 @@ export default function PaymentsPage() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-emerald-200 transition-colors">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl">
-              <IndianRupee size={24} />
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-emerald-200 transition-colors">
+            <div className="w-12 h-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              💰
             </div>
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Today Collection</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-white">₹{todayCollection.toLocaleString('en-IN')}</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Collection</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">₹{totalCollectedMock.toLocaleString('en-IN')}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-blue-200 transition-colors">
-            <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-2xl">
-              <FileCheck size={24} />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Today's Payments</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-white">{todayPayments.length}</p>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-orange-200 transition-colors">
-            <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-2xl flex items-center justify-center text-2xl">
-              <AlertCircle size={24} />
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-amber-200 transition-colors">
+            <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              ⚠️
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Pending Amount</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">₹{totalPendingMock.toLocaleString('en-IN')}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-purple-200 transition-colors">
-            <div className="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-2xl">
-              <FileText size={24} />
+          <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-purple-200 transition-colors">
+            <div className="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+              🧾
             </div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Receipts Generated</p>
@@ -316,30 +307,30 @@ export default function PaymentsPage() {
         </div>
 
         {/* Advanced Search & Filters */}
-        <section className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-3">
+        <section className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col md:flex-row gap-3">
           <div className="flex-1 relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
             <input 
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search Name, Receipt No, Phone, Admission No..." 
-              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-slate-100 transition shadow-inner"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-slate-100 placeholder-slate-500 transition shadow-inner"
             />
           </div>
-          <select value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="w-full md:w-36 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 outline-none">
-            <option value="All">All Dates</option>
+          <select value={filterDate} onChange={(e) => setFilterDate(e.target.value)} className="w-full md:w-36 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none">
+            <option value="All">📅 All Dates</option>
             <option value="Today">Today</option>
             <option value="Yesterday">Yesterday</option>
             <option value="This Week">This Week</option>
             <option value="This Month">This Month</option>
             <option value="Academic Year">Academic Year</option>
           </select>
-          <select value={filterMode} onChange={(e) => setFilterMode(e.target.value)} className="w-full md:w-36 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 outline-none">
-            <option value="">All Modes</option>
+          <select value={filterMode} onChange={(e) => setFilterMode(e.target.value)} className="w-full md:w-36 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none">
+            <option value="">🏷️ All Modes</option>
             {MODES.map(m => <option key={m.val} value={m.val}>{m.label}</option>)}
           </select>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full md:w-36 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 outline-none">
-            <option value="">All Status</option>
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="w-full md:w-36 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 outline-none">
+            <option value="">🚥 All Status</option>
             <option value="Paid">Paid</option>
             <option value="Pending">Pending</option>
             <option value="Partial">Partial</option>
@@ -347,20 +338,20 @@ export default function PaymentsPage() {
         </section>
 
         {/* Payments Table */}
-        <section className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden" ref={tableRef}>
+        <section className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden" ref={tableRef}>
           <div className="overflow-x-auto">
             <table className="w-full min-w-max text-left text-sm text-slate-700 dark:text-slate-300">
-              <thead className="bg-slate-50/50 dark:bg-slate-950/50 text-[10px] text-slate-400 font-bold uppercase tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-[10px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">Receipt</th>
-                  <th className="px-6 py-4">Student</th>
-                  <th className="px-6 py-4">Term</th>
-                  <th className="px-6 py-4 text-right">Total Fee</th>
-                  <th className="px-6 py-4 text-right">Amount Paid</th>
-                  <th className="px-6 py-4">Due Status</th>
-                  <th className="px-6 py-4">Date</th>
-                  <th className="px-6 py-4">Mode</th>
-                  <th className="px-6 py-4 text-center">Actions</th>
+                  <th className="px-6 py-4">🧾 Receipt</th>
+                  <th className="px-6 py-4">🧑‍🎓 Student</th>
+                  <th className="px-6 py-4">🗓️ Term</th>
+                  <th className="px-6 py-4 text-right">💎 Total Fee</th>
+                  <th className="px-6 py-4 text-right">💵 Amount Paid</th>
+                  <th className="px-6 py-4">📊 Due Status</th>
+                  <th className="px-6 py-4">📅 Date</th>
+                  <th className="px-6 py-4">🏷️ Mode</th>
+                  <th className="px-6 py-4 text-center">⚙️ Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -404,10 +395,10 @@ export default function PaymentsPage() {
                           className="relative group/bar cursor-pointer" 
                           onClick={(e) => { e.stopPropagation(); setQuickCollect(p); }}
                         >
-                          <div className="w-24 h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
+                          <div className="w-24 h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
                             <div className={`h-full transition-all ${percent === 100 ? 'bg-emerald-500' : percent > 0 ? 'bg-blue-500' : 'bg-orange-500'}`} style={{ width: `${percent}%` }}></div>
                           </div>
-                          <p className={`text-[9px] font-black mt-1 uppercase tracking-wider ${percent === 100 ? 'text-emerald-600' : percent > 0 ? 'text-blue-600' : 'text-orange-600'}`}>
+                          <p className={`text-[9px] font-black mt-1 uppercase tracking-wider ${percent === 100 ? 'text-emerald-700 dark:text-emerald-600' : percent > 0 ? 'text-blue-700 dark:text-blue-600' : 'text-orange-700 dark:text-orange-600'}`}>
                             {percent === 100 ? 'Paid in Full' : `${percent}% Paid`}
                           </p>
                           
@@ -443,7 +434,7 @@ export default function PaymentsPage() {
                       <td className="px-6 py-4 text-center relative" onClick={(e) => e.stopPropagation()}>
                         <button 
                           onClick={() => setActiveDropdown(activeDropdown === p.id ? null : p.id)} 
-                          className="p-2 text-slate-400 hover:text-slate-800 bg-slate-50 hover:bg-slate-200 rounded-xl transition"
+                          className="p-2 text-slate-500 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
                         >
                           ⋮
                         </button>
