@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import Layout from '../components/Layout';
-import { api } from '../api';
+import { api, BASE_URL } from '../api';
 import { useApp } from '../AppContext';
 import { 
   Building2, UserCog, Mail, Receipt, HardDrive, 
@@ -90,7 +90,7 @@ export default function SettingsPage() {
       
       if (s.logo_path) {
         setCurrentLogoPath(s.logo_path);
-        setLogoPreview(`http://localhost:8000/${s.logo_path}`);
+        setLogoPreview(`${BASE_URL}/${s.logo_path}`);
       }
     } catch (err) { console.error(err); }
   }
@@ -104,11 +104,11 @@ export default function SettingsPage() {
     
     // Validation
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      setError('❌ Only JPG / PNG formats are allowed.');
+      setError(' Only JPG / PNG formats are allowed.');
       return;
     }
     if (file.size > 2 * 1024 * 1024) {
-      setError('❌ Logo size must be less than 2 MB.');
+      setError(' Logo size must be less than 2 MB.');
       return;
     }
     
@@ -121,7 +121,7 @@ export default function SettingsPage() {
     setForm(originalForm);
     setLogoFile(null);
     if (currentLogoPath) {
-      setLogoPreview(`http://localhost:8000/${currentLogoPath}`);
+      setLogoPreview(`${BASE_URL}/${currentLogoPath}`);
     } else {
       setLogoPreview('');
     }
@@ -131,11 +131,11 @@ export default function SettingsPage() {
 
   function validate() {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      setError('❌ Invalid Email address.');
+      setError(' Invalid Email address.');
       return false;
     }
     if (form.phone && !/^\d{10}$/.test(form.phone)) {
-      setError('❌ Phone number must be exactly 10 digits.');
+      setError(' Phone number must be exactly 10 digits.');
       return false;
     }
     return true;
@@ -175,7 +175,7 @@ export default function SettingsPage() {
       
       setOriginalForm(form);
       setIsDirty(false);
-      showToast('✅ Settings Updated Successfully');
+      showToast(' Settings Updated Successfully');
       
       // Small delay then reload for branding
       if (logoFile || form.school_name !== originalForm.school_name) {
@@ -199,7 +199,7 @@ export default function SettingsPage() {
       localStorage.setItem('thayagam_extra_settings', JSON.stringify(extras));
       setOriginalForm(p => ({ ...p, last_backup: now }));
       setIsBackingUp(false);
-      showToast('✅ Backup Completed Successfully');
+      showToast(' Backup Completed Successfully');
     }, 2000);
   }
 
@@ -376,7 +376,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                   <div className="pt-4 border-t border-slate-100 dark:border-slate-700">
-                    <button type="button" onClick={() => showToast('✅ Password changed successfully!')} className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-slate-800 transition">Change Password</button>
+                    <button type="button" onClick={() => showToast(' Password changed successfully!')} className="px-5 py-2.5 bg-slate-900 text-white rounded-xl text-sm font-bold shadow-sm hover:bg-slate-800 transition">Change Password</button>
                   </div>
                 </div>
               )}
@@ -458,7 +458,7 @@ export default function SettingsPage() {
                       disabled={isBackingUp}
                       className="px-6 py-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-sm font-bold shadow-sm w-full transition flex justify-center items-center gap-2 disabled:opacity-70"
                     >
-                      {isBackingUp ? <span className="animate-spin text-lg">⚙</span> : <Download size={18} />}
+                      {isBackingUp ? <span className="animate-spin text-lg"></span> : <Download size={18} />}
                       {isBackingUp ? 'Generating Backup...' : 'Backup Now'}
                     </button>
                   </div>
@@ -487,7 +487,7 @@ export default function SettingsPage() {
           <div className="bg-white rounded-3xl w-full max-w-xl overflow-hidden shadow-2xl border border-slate-200 animate-scale-up">
             <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
               <h2 className="text-sm font-bold text-slate-700">Receipt Preview</h2>
-              <button onClick={() => setShowReceiptPreview(false)} className="text-slate-400 hover:text-slate-600">✕</button>
+              <button onClick={() => setShowReceiptPreview(false)} className="text-slate-400 hover:text-slate-600">X</button>
             </div>
             <div className="p-8 bg-white text-slate-900 border-2 border-dashed border-slate-200 m-6 rounded-xl relative">
               

@@ -10,8 +10,40 @@ router = APIRouter(prefix="/classes", tags=["Classes"])
 
 
 @router.get("/", response_model=List[schemas.ClassOut])
-def get_classes(db: Session = Depends(get_db)):
-    return db.query(models.Class).order_by(models.Class.name).all()
+def get_classes(academic_year: Optional[str] = Query(None), db: Session = Depends(get_db)):
+    ay = academic_year or db.query(models.SchoolSettings.current_academic_year).scalar() or "2024-2025"
+    classes = db.query(models.Class).order_by(models.Class.name).all()
+    results = []
+    
+    for c in classes:
+        # Get active student count
+        student_count = db.query(func.count(models.Student.id)).filter(
+            models.Student.class_id == c.id,
+            models.Student.is_active == True
+        ).scalar() or 0
+        
+        # Calculate pending fees
+        class_fee_per_student = db.query(func.sum(models.FeeStructure.amount)).filter(
+            models.FeeStructure.class_id == c.id,
+            models.FeeStructure.academic_year == ay
+        ).scalar() or Decimal("0")
+        
+        total_expected = class_fee_per_student * student_count
+        
+        collected = db.query(func.sum(models.FeePayment.amount_paid)).filter(
+            models.FeePayment.class_id == c.id,
+            models.FeePayment.academic_year == ay,
+            models.FeePayment.is_cancelled == False
+        ).scalar() or Decimal("0")
+        
+        pending_fees = max(Decimal("0"), total_expected - collected)
+        
+        out = schemas.ClassOut.from_orm(c)
+        out.student_count = student_count
+        out.pending_fees = float(pending_fees)
+        results.append(out)
+        
+    return results
 
 
 @router.post("/", response_model=schemas.ClassOut, dependencies=[Depends(require_role(["admin"]))])

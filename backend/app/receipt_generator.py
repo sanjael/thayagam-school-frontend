@@ -32,8 +32,17 @@ def generate_receipt_pdf(payment: dict, settings: dict) -> bytes:
     elements = []
 
     # ── Header ─────────────────────────────────────────
+    import base64
     logo_path = settings.get("logo_path", "")
-    if logo_path and os.path.exists(logo_path):
+    if logo_path.startswith("data:image"):
+        try:
+            b64_str = logo_path.split(",")[1]
+            img_data = base64.b64decode(b64_str)
+            img_io = io.BytesIO(img_data)
+            elements.append(Image(img_io, width=18*mm, height=18*mm))
+        except:
+            pass
+    elif logo_path and os.path.exists(logo_path):
         elements.append(Image(logo_path, width=18*mm, height=18*mm))
 
     elements.append(Paragraph(settings.get("school_name", "School"), heading))

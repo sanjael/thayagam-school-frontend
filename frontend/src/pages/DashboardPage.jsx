@@ -62,12 +62,12 @@ export default function DashboardPage() {
   const fmt = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`;
 
   const modeIcon = (mode) => {
-    if (!mode) return '💳';
+    if (!mode) return '';
     const m = String(mode).toLowerCase();
-    if (m === 'cash') return '💵';
-    if (m === 'online') return '📱';
-    if (m === 'cheque' || m === 'dd') return '🏢';
-    return '💳';
+    if (m === 'cash') return '';
+    if (m === 'online') return '';
+    if (m === 'cheque' || m === 'dd') return '';
+    return '';
   };
 
   const modeBg = (mode) => {
@@ -186,7 +186,7 @@ export default function DashboardPage() {
               id: 'qa-new-payment',
               label: 'New Payment',
               sub: 'Record a fee collection',
-              icon: '💰',
+              icon: '',
               color: 'from-amber-400 to-orange-500',
               onClick: handleCollectNow,
               show: user?.role !== 'principal',
@@ -195,7 +195,7 @@ export default function DashboardPage() {
               id: 'qa-add-student',
               label: 'Add Student',
               sub: 'Register new student',
-              icon: '🎓',
+              icon: '',
               color: 'from-sky-400 to-indigo-500',
               onClick: handleNewStudent,
               show: user?.role !== 'principal',
@@ -204,7 +204,7 @@ export default function DashboardPage() {
               id: 'qa-view-reports',
               label: 'View Reports',
               sub: 'Pending dues & daybook',
-              icon: '📊',
+              icon: '',
               color: 'from-emerald-400 to-teal-500',
               to: '/reports',
               show: true,
@@ -213,7 +213,7 @@ export default function DashboardPage() {
               id: 'qa-audit-logs',
               label: 'Audit Logs',
               sub: 'System activity trail',
-              icon: '🔍',
+              icon: '',
               color: 'from-purple-400 to-fuchsia-500',
               to: '/audit-logs',
               show: user?.role === 'admin',
@@ -260,7 +260,7 @@ export default function DashboardPage() {
           <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 shadow-sm">
             <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider mb-6 flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-indigo-600"></span>
-              🕒 Busiest Hours for Fee Collection
+               Busiest Hours for Fee Collection
             </h3>
             
             <div className="h-56 w-full">
@@ -289,7 +289,7 @@ export default function DashboardPage() {
             <div className="flex items-start justify-between mb-5">
               <h3 className="text-sm font-bold text-slate-800 dark:text-white uppercase tracking-wider flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                📈 Collection Trend
+                 Collection Trend
               </h3>
               {/* Period Filter Pills */}
               <div className="flex bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl p-0.5 gap-0.5">
@@ -375,7 +375,7 @@ export default function DashboardPage() {
             <div className="mt-3 space-y-3">
               {recentPayments.length === 0 && (
                 <div className="py-8 text-center">
-                  <span className="text-3xl">💸</span>
+                  <span className="text-3xl"></span>
                   <p className="mt-2 text-xs text-slate-400">No payments recorded yet.</p>
                 </div>
               )}
@@ -446,7 +446,7 @@ export default function DashboardPage() {
             
             {classes.length === 0 && (
               <div className="py-10 text-center">
-                <span className="text-3xl">📂</span>
+                <span className="text-3xl"></span>
                 <p className="mt-2 text-sm text-slate-400">No classes configured yet.</p>
               </div>
             )}

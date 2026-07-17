@@ -19,9 +19,12 @@ def _build_receipt_no(db: Session) -> str:
 
 def _enrich(p: models.FeePayment) -> schemas.FeePaymentOut:
     out = schemas.FeePaymentOut.from_orm(p)
-    out.student_name = p.student.name if p.student else None
-    out.class_name   = p.student.class_.name if p.student and p.student.class_ else None
-    out.receipt_no   = p.receipt.receipt_no if p.receipt else None
+    if p.student:
+        out.student_name = p.student.name
+        out.admission_no = p.student.admission_no
+        out.phone = p.student.phone
+        out.class_name = p.student.class_.name if p.student.class_ else None
+    out.receipt_no = p.receipt.receipt_no if p.receipt else None
     return out
 
 

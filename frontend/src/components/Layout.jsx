@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import { api } from '../api';
+import { api, BASE_URL } from '../api';
 import { useAuth } from '../AuthContext';
 import { useApp } from '../AppContext';
+import { Search, Bell, Menu, ChevronDown, Key, LogOut, Moon, Sun, CheckCircle, Clock } from 'lucide-react';
 
 export default function Layout({ children }) {
   const { user, logout } = useAuth();
@@ -155,13 +156,13 @@ export default function Layout({ children }) {
   };
 
   const roleLabels = {
-    admin: '🔑 Administrator',
-    principal: '🎓 Principal',
-    accountant: '💼 Accountant',
+    admin: ' Administrator',
+    principal: ' Principal',
+    accountant: ' Accountant',
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 print:h-auto print:overflow-visible relative w-full">
+    <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 print:h-auto print:overflow-visible relative w-full">
       
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
@@ -178,7 +179,7 @@ export default function Layout({ children }) {
       
       <div className="flex flex-1 flex-col overflow-hidden print:overflow-visible min-w-0">
         {/* Sticky Header */}
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 sm:px-6 shadow-sm z-20 print:hidden flex-shrink-0">
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-3 sm:px-6 z-20 print:hidden flex-shrink-0">
           
           {/* Logo / Title */}
           <div className="flex items-center gap-2 sm:gap-3">
@@ -187,21 +188,17 @@ export default function Layout({ children }) {
               onClick={() => setIsSidebarOpen(true)}
               className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition mr-1"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              <Menu size={20} />
             </button>
             {settings?.logo_path ? (
               <img 
-                src={`http://localhost:8000/${settings.logo_path}`} 
-                alt="Logo" 
+                src={`${BASE_URL}/${settings.logo_path}`} 
+                alt="Logo"
                 className="h-9 w-9 rounded-xl object-contain border border-slate-100 dark:border-slate-800 p-0.5 bg-slate-50"
                 onError={(e) => { e.target.style.display = 'none'; }}
               />
             ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-xl text-amber-600 font-bold border border-amber-500/20">
-                🏫
-              </div>
+              <img src="/logo.jpg" alt="Default Logo" className="h-9 w-9 rounded-xl object-contain border border-slate-100 dark:border-slate-800 p-0.5 bg-slate-50" />
             )}
             <div className="hidden md:block">
               <span className={`text-[10px] font-bold uppercase tracking-wider ${
@@ -226,10 +223,10 @@ export default function Layout({ children }) {
                 onChange={(e) => { setSearchQuery(e.target.value); setShowSearchResults(true); }}
                 onFocus={() => setShowSearchResults(true)}
                 placeholder={t('studentSearchPlaceholder')}
-                className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-1.5 pl-9 text-xs outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-900 dark:text-slate-100"
+                className="w-full rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-1.5 pl-9 text-xs outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500/30 text-slate-900 dark:text-slate-100 placeholder-slate-400"
               />
               <span className="absolute left-3 top-2 text-slate-400">
-                🔍
+                <Search size={14} />
               </span>
             </div>
             
@@ -275,10 +272,10 @@ export default function Layout({ children }) {
             {/* Dark Mode Toggle */}
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 text-xs"
+              className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition"
               title="Toggle Dark/Light Mode"
             >
-              {darkMode ? '☀️' : '🌙'}
+              {darkMode ? <Sun size={14} /> : <Moon size={14} />}
             </button>
 
             {/* Academic Year Badge */}
@@ -294,9 +291,7 @@ export default function Layout({ children }) {
                 onClick={() => { setShowNotifications(!showNotifications); if (!showNotifications) markAllRead(); }}
                 className="relative p-1.5 rounded-full bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition"
               >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
+                <Bell size={16} />
                 {unreadCount > 0 && (
                   <span className="absolute -top-1 -right-1 min-w-[16px] h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center px-0.5 animate-pulse">
                     {unreadCount > 9 ? '9+' : unreadCount}
@@ -313,7 +308,7 @@ export default function Layout({ children }) {
                   <div className="max-h-72 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800">
                     {notifications.items?.length === 0 && (
                       <div className="px-4 py-8 text-center text-xs text-slate-400">
-                        <span className="text-2xl">🎉</span>
+                        <span className="text-2xl"></span>
                         <p className="mt-1 font-medium">No alerts. All clear!</p>
                       </div>
                     )}
@@ -357,9 +352,7 @@ export default function Layout({ children }) {
                 <span className="hidden sm:block text-slate-700 dark:text-slate-300 max-w-[80px] truncate">
                   {user?.username}
                 </span>
-                <svg className="w-3 h-3 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                </svg>
+                <ChevronDown size={14} className="text-slate-400" />
               </button>
 
               {showProfile && (
@@ -379,15 +372,13 @@ export default function Layout({ children }) {
 
                   {/* Menu Items */}
                   <div className="p-2">
-                    <button
-                      onClick={() => { setShowChangePassword(true); setShowProfile(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                    >
-                      <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                      </svg>
-                      Change Password
-                    </button>
+                      <button
+                        onClick={() => { setShowChangePassword(true); setShowProfile(false); }}
+                        className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                      >
+                        <Key size={14} className="text-slate-400" />
+                        Change Password
+                      </button>
 
                     {user?.role === 'admin' && (
                       <Link
@@ -395,10 +386,7 @@ export default function Layout({ children }) {
                         onClick={() => setShowProfile(false)}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
                       >
-                        <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
+                        <Settings size={14} className="text-slate-400" />
                         School Settings
                       </Link>
                     )}
@@ -408,9 +396,7 @@ export default function Layout({ children }) {
                         onClick={() => { setShowProfile(false); logout(); }}
                         className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20 transition"
                       >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                        </svg>
+                        <LogOut size={14} />
                         {t('logout')}
                       </button>
                     </div>
@@ -431,7 +417,7 @@ export default function Layout({ children }) {
       {idleAlert && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="w-full max-w-sm rounded-3xl bg-white p-6 text-center shadow-2xl">
-            <span className="text-4xl">⏳</span>
+            <Clock size={48} className="mx-auto text-rose-500 mb-2" />
             <h3 className="text-base font-bold text-slate-900 mt-3">Session Expired</h3>
             <p className="text-xs text-slate-500 mt-1">You have been logged out due to 30 minutes of inactivity.</p>
             <button 
@@ -455,18 +441,18 @@ export default function Layout({ children }) {
               </div>
               <button onClick={() => { setShowChangePassword(false); setPwError(''); setPwSuccess(''); }}
                 className="text-slate-400 hover:text-slate-600 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-full">
-                ✕
+                X
               </button>
             </div>
 
             {pwError && (
               <div className="mt-3 rounded-xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 px-3 py-2 text-xs font-bold text-rose-600">
-                ⚠️ {pwError}
+                ️ {pwError}
               </div>
             )}
             {pwSuccess && (
               <div className="mt-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 px-3 py-2 text-xs font-bold text-emerald-600">
-                ✓ {pwSuccess}
+                 {pwSuccess}
               </div>
             )}
 

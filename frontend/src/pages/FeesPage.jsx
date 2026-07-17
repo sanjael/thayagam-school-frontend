@@ -141,10 +141,10 @@ export default function FeesPage() {
           {user?.role === 'admin' && (
             <div className="flex flex-wrap gap-3">
               <button onClick={() => alert("Bulk fee increased by 5% successfully!")} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 px-4 py-2.5 rounded-2xl text-xs font-bold transition shadow-sm flex items-center gap-2">
-                📈 Bulk Increase 5%
+                 Bulk Increase 5%
               </button>
               <button onClick={() => alert("Fee structures copied to next year!")} className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-5 py-2.5 rounded-2xl text-xs font-bold transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
-                📋 Copy Previous Year
+                 Copy Previous Year
               </button>
             </div>
           )}
@@ -153,11 +153,11 @@ export default function FeesPage() {
         {/* Top Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center hover:border-amber-200 transition-colors">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">💰 Total Fee Types</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1"> Total Fee Types</p>
             <p className="text-2xl font-black text-slate-900 dark:text-white">{uniqueFeeTypes}</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center hover:border-blue-200 transition-colors">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">📚 Configured Classes</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1"> Configured Classes</p>
             <p className="text-2xl font-black text-slate-900 dark:text-white">{configuredClasses}</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center hover:border-emerald-200 transition-colors">
@@ -165,7 +165,7 @@ export default function FeesPage() {
             <p className="text-2xl font-black text-slate-900 dark:text-white">₹{avgFee.toLocaleString('en-IN')}</p>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col justify-center hover:border-purple-200 transition-colors">
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">📅 Academic Year</p>
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1"> Academic Year</p>
             <p className="text-2xl font-black text-slate-900 dark:text-white">{activeYear}</p>
           </div>
         </div>
@@ -175,7 +175,7 @@ export default function FeesPage() {
           <section className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-6 md:p-8 shadow-sm">
             <h2 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 mb-6">
               <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-500 p-1.5 rounded-xl shadow-sm">
-                {editId ? '✏️' : '➕'}
+                {editId ? '️' : ''}
               </span>
               {editId ? 'Edit Fee Structure' : 'Add Fee Structure'}
             </h2>
@@ -218,7 +218,7 @@ export default function FeesPage() {
               <div className="md:col-span-1 flex gap-2">
                 {editId && (
                   <button type="button" onClick={() => {setForm(EMPTY); setEditId(null);}} className="w-12 h-[46px] flex items-center justify-center rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 transition shadow-sm">
-                    ✕
+                    X
                   </button>
                 )}
                 <button disabled={loading} className="flex-1 rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-3 text-sm font-black transition shadow-md shadow-amber-500/20 h-[46px] flex items-center justify-center gap-1.5">
@@ -229,7 +229,7 @@ export default function FeesPage() {
             
             {error && (
               <p className="mt-4 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 p-3.5 text-xs text-rose-600 dark:text-rose-400 font-bold">
-                ⚠️ {error}
+                ️ {error}
               </p>
             )}
           </section>
@@ -238,7 +238,7 @@ export default function FeesPage() {
         {/* Search & Filters */}
         <section className="flex flex-col md:flex-row gap-3 bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
           <div className="flex-1 relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></span>
             <input 
               type="text" 
               placeholder="Search Fee Type (e.g. Transport, Exam)" 
@@ -310,7 +310,7 @@ export default function FeesPage() {
                     <div className="bg-amber-50 dark:bg-amber-900/10 rounded-2xl p-5 border border-amber-200 dark:border-amber-800/50 mb-6 flex flex-col md:flex-row justify-between items-center gap-5 shadow-sm">
                       <div className="flex-1 w-full">
                         <h4 className="text-[10px] font-black text-amber-800 dark:text-amber-500 uppercase tracking-widest mb-3 flex items-center gap-2">
-                          <span className="text-base">📋</span> Fee Structure Preview
+                          <span className="text-base"></span> Fee Structure Preview
                         </h4>
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-y-3 gap-x-4">
                           {Object.entries(totalsByType).map(([type, amount]) => (
@@ -342,7 +342,7 @@ export default function FeesPage() {
                           
                           <div className="mb-5">
                             <p className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-1 flex items-center gap-1.5">
-                              <span>💰</span> {item.fee_type}
+                              <span></span> {item.fee_type}
                             </p>
                             <p className="text-2xl font-black text-emerald-600 dark:text-emerald-500">₹{Number(item.amount).toLocaleString('en-IN')}</p>
                           </div>
@@ -350,10 +350,10 @@ export default function FeesPage() {
                           {user?.role === 'admin' && (
                             <div className="flex gap-2 border-t border-slate-100 dark:border-slate-800 pt-3">
                               <button onClick={() => openEdit(item)} className="flex-1 text-slate-500 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-blue-900/30 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
-                                ✏️ Edit
+                                ️ Edit
                               </button>
                               <button onClick={() => handleDelete(item.id)} className="flex-1 text-slate-500 hover:text-rose-600 bg-slate-50 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/30 py-2 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5">
-                                🗑 Delete
+                                 Delete
                               </button>
                             </div>
                           )}
@@ -369,7 +369,7 @@ export default function FeesPage() {
 
           {structures.length === 0 && (
             <div className="py-20 flex flex-col items-center justify-center bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 border-dashed">
-              <span className="text-5xl mb-4">📑</span>
+              <span className="text-5xl mb-4"></span>
               <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">No fee structures found</h3>
               <p className="text-sm text-slate-500 mt-1">Try adjusting filters or add a new fee entry above.</p>
             </div>

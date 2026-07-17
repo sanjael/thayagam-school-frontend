@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import { api } from '../api';
 import { useApp } from '../AppContext';
 import { useAuth } from '../AuthContext';
+import { FileText, FileSpreadsheet, Plus, Search, MoreVertical, Edit, Trash2, Eye, Printer, Phone, History } from 'lucide-react';
 
 const EMPTY = {
   admission_no: '', name: '', class_id: '', gender: '', dob: '',
@@ -211,10 +212,10 @@ export default function StudentsPage() {
               onClick={() => setQuickFilter(qf)}
               className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${quickFilter === qf ? 'bg-amber-500 text-slate-950 shadow-md border-amber-500' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
             >
-              {qf === 'Active' && '🟢 '}
-              {qf === 'Inactive' && '🔴 '}
-              {qf === 'New Admissions' && '🆕 '}
-              {qf === 'Fee Pending' && '💰 '}
+              {qf === 'Active' && ' '}
+              {qf === 'Inactive' && ' '}
+              {qf === 'New Admissions' && ' '}
+              {qf === 'Fee Pending' && ' '}
               {qf}
             </button>
           ))}
@@ -247,18 +248,18 @@ export default function StudentsPage() {
               <p className="text-xs text-slate-500 mt-1">Manage and view student information</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <button className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
-                📄 Export PDF
+              <button onClick={() => window.print()} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
+                 <FileText size={16} /> Export PDF
               </button>
-              <button className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
-                📊 Export Excel
+              <button onClick={() => alert('Export to Excel will be available in the next update!')} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
+                 <FileSpreadsheet size={16} /> Export Excel
               </button>
               {user?.role !== 'principal' && (
                 <button
                   onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY); }}
                   className="rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 text-xs font-bold transition shadow-md shadow-amber-500/20 flex items-center gap-1.5"
                 >
-                  ➕ {t('addStudent')}
+                   <Plus size={16} /> {t('addStudent')}
                 </button>
               )}
             </div>
@@ -306,10 +307,10 @@ export default function StudentsPage() {
               </span>
               <div className="flex gap-2">
                 <button onClick={handlePrintIDCards} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
-                  🖨 Print ID Cards
+                   Print ID Cards
                 </button>
                 <button onClick={handleExportSelected} className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 transition shadow-sm flex items-center gap-1.5">
-                  📊 Export Selected
+                   Export Selected
                 </button>
                 {user?.role === 'admin' && (
                   <button onClick={handleBulkDeactivate} className="px-3 py-1.5 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition shadow-sm">
@@ -377,14 +378,14 @@ export default function StudentsPage() {
                       {/* Parent Phone Hover Tooltip */}
                       {s.phone && (
                         <div className="absolute bottom-full left-5 mb-1 hidden peer-hover:block bg-slate-800 text-white text-[10px] px-2 py-1 rounded shadow-lg whitespace-nowrap z-30 font-semibold">
-                          📞 {s.phone}
+                           {s.phone}
                         </div>
                       )}
                     </td>
                     <td className="px-5 py-3 text-slate-600 dark:text-slate-400 font-medium">
                       {s.phone ? (
                         <a href={`tel:${s.phone}`} className="flex items-center gap-1.5 hover:text-amber-500 transition group/phone">
-                          <span className="bg-slate-100 dark:bg-slate-800 group-hover/phone:bg-amber-100 dark:group-hover/phone:bg-amber-900/30 text-slate-400 group-hover/phone:text-amber-600 p-1.5 rounded-full transition-colors"><svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></span>
+                          <span className="bg-slate-100 dark:bg-slate-800 group-hover/phone:bg-amber-100 dark:group-hover/phone:bg-amber-900/30 text-slate-400 group-hover/phone:text-amber-600 p-1.5 rounded-full transition-colors"><Phone size={12} /></span>
                           {s.phone}
                         </a>
                       ) : '—'}
@@ -397,25 +398,25 @@ export default function StudentsPage() {
                     </td>
                     <td className="px-5 py-3 text-center">
                       <div className="flex items-center justify-center gap-2">
-                        <button onClick={() => setViewStudent(s)} className="text-slate-400 hover:text-blue-500 bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 border border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800 p-1.5 rounded-lg transition" title="View Profile">
-                          👁
+                        <button onClick={() => setViewStudent(s)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition" title="View Profile">
+                          <Eye size={16} />
                         </button>
                         {user?.role !== 'principal' && (
-                          <button onClick={() => openEdit(s)} className="text-slate-400 hover:text-amber-500 bg-slate-50 dark:bg-slate-800 hover:bg-amber-50 dark:hover:bg-amber-900/30 border border-slate-200 dark:border-slate-700 hover:border-amber-200 dark:hover:border-amber-800 p-1.5 rounded-lg transition" title="Edit">
-                            ✏️
+                          <button onClick={() => openEdit(s)} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 rounded-lg transition" title="Edit">
+                            <Edit size={16} />
                           </button>
                         )}
-                        <button className="text-slate-400 hover:text-emerald-500 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 border border-slate-200 dark:border-slate-700 hover:border-emerald-200 dark:hover:border-emerald-800 p-1.5 rounded-lg transition" title="Fee History">
-                          🧾
+                        <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg transition" title="Fee History">
+                          <History size={16} />
                         </button>
                         {user?.role === 'admin' && (
                           <div className="relative group/menu">
                             <button className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 p-1.5 rounded-lg transition" title="More Options">
-                              ⋮
+                              <MoreVertical size={16} />
                             </button>
                             <div className="absolute right-0 mt-1 hidden group-hover/menu:block bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl z-50 min-w-[140px] overflow-hidden">
                               <button onClick={() => handleDelete(s.id)} className="w-full text-left px-4 py-2.5 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 flex items-center gap-2">
-                                🗑 Delete
+                                <Trash2 size={14} /> Delete
                               </button>
                             </div>
                           </div>
@@ -482,7 +483,7 @@ export default function StudentsPage() {
                 <div className="absolute -bottom-10 left-6 w-20 h-20 bg-white dark:bg-slate-900 rounded-full border-[5px] border-white dark:border-slate-900 flex items-center justify-center shadow-lg">
                    <span className="text-3xl font-black text-amber-500">{viewStudent.name.charAt(0).toUpperCase()}</span>
                 </div>
-                <button onClick={() => setViewStudent(null)} className="absolute top-4 right-4 text-white hover:text-slate-900 bg-black/10 hover:bg-white/50 p-2 rounded-full backdrop-blur-md transition">✕</button>
+                <button onClick={() => setViewStudent(null)} className="absolute top-4 right-4 text-white hover:text-slate-900 bg-black/10 hover:bg-white/50 p-2 rounded-full backdrop-blur-md transition">X</button>
               </div>
               <div className="pt-14 px-7 pb-7">
                 <div className="flex justify-between items-start mb-6 border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -522,7 +523,7 @@ export default function StudentsPage() {
                 </div>
                 <div className="mt-8 flex gap-3">
                   <button className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
-                    <span className="text-lg">🧾</span> View Fee History
+                    <span className="text-lg"></span> View Fee History
                   </button>
                 </div>
               </div>
@@ -537,7 +538,7 @@ export default function StudentsPage() {
               <div className="flex justify-between items-center pb-5 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10">
                 <h2 className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-3">
                   <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-500 p-2 rounded-xl shadow-sm">
-                    {editId ? '✏️' : '➕'}
+                    {editId ? '️' : ''}
                   </span>
                   {editId ? t('editStudent') : t('registerStudent')}
                 </h2>
@@ -545,13 +546,13 @@ export default function StudentsPage() {
                   onClick={() => setShowForm(false)} 
                   className="text-slate-400 hover:text-slate-900 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-2.5 rounded-full transition"
                 >
-                  ✕
+                  X
                 </button>
               </div>
 
               {error && (
                 <div className="mt-5 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 p-4 text-xs text-rose-600 dark:text-rose-400 font-bold flex items-center gap-2">
-                  <span className="text-base">⚠️</span> {error}
+                  <span className="text-base">️</span> {error}
                 </div>
               )}
 

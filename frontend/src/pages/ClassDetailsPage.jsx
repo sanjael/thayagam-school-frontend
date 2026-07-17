@@ -109,7 +109,7 @@ export default function ClassDetailsPage() {
                   onClick={exportCSV}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-2xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm"
                 >
-                  📥 Download Detailed Excel
+                   Download Detailed Excel
                 </button>
               </div>
             )}

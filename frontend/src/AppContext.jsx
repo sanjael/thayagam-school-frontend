@@ -23,9 +23,9 @@ const translations = {
     rememberMe: "Remember Me",
     signIn: "Sign In to Portal",
     signingIn: "Authenticating...",
-    invalidCredentials: "Invalid username or password ❌",
-    accountDisabled: "This account has been disabled 🚫",
-    tamilError: "கடவுச்சொல் அல்லது பயனர்பெயர் தவறு ❌",
+    invalidCredentials: "Invalid username or password ",
+    accountDisabled: "This account has been disabled ",
+    tamilError: "கடவுச்சொல் அல்லது பயனர்பெயர் தவறு ",
     
     // Dashboard
     welcomeTitle: "Dashboard Overview",
@@ -55,9 +55,9 @@ const translations = {
     savePrint: "Save & Print Receipt",
     feeRecordStatus: "Fee Record Status",
     noFeeDefined: "No fee structure is defined for this class term/year.",
-    paidInFull: "Paid in Full! 🎉",
+    paidInFull: "Paid in Full! ",
     due: "Due",
-    successToast: "Fee collected successfully! ✅",
+    successToast: "Fee collected successfully! ",
     
     // Common / Table Headers
     receiptCol: "Receipt",
@@ -96,11 +96,11 @@ const translations = {
     // Reports Page
     reportsHeading: "Financial Reports",
     reportsSub: "Review school fee collection and outstanding balances.",
-    pendingDuesTab: "📋 Pending Dues",
-    classCollectionsTab: "🏫 Class Collections",
+    pendingDuesTab: " Pending Dues",
+    classCollectionsTab: " Class Collections",
     collectNow: "Collect Now",
     sendReminder: "Send Reminder",
-    whatsappSent: "WhatsApp reminder template generated for parent! 📱",
+    whatsappSent: "WhatsApp reminder template generated for parent! ",
     
     // Settings Page
     settingsSub: "Configure school properties shown on receipts and portal headers.",
@@ -131,9 +131,9 @@ const translations = {
     rememberMe: "என்னை நினைவில் கொள்",
     signIn: "உள்நுழையவும்",
     signingIn: "சரிபார்க்கிறது...",
-    invalidCredentials: "தவறான பயனர் பெயர் அல்லது கடவுச்சொல் ❌",
-    accountDisabled: "இந்த கணக்கு முடக்கப்பட்டுள்ளது 🚫",
-    tamilError: "கடவுச்சொல் அல்லது பயனர்பெயர் தவறு ❌",
+    invalidCredentials: "தவறான பயனர் பெயர் அல்லது கடவுச்சொல் ",
+    accountDisabled: "இந்த கணக்கு முடக்கப்பட்டுள்ளது ",
+    tamilError: "கடவுச்சொல் அல்லது பயனர்பெயர் தவறு ",
     
     // Dashboard
     welcomeTitle: "நிர்வாக முகப்புப்பலகை",
@@ -163,9 +163,9 @@ const translations = {
     savePrint: "சேமித்து ரசீதை அச்சிடு",
     feeRecordStatus: "கல்விக் கட்டண விபரம்",
     noFeeDefined: "இந்த வகுப்பிற்கு இந்த பருவத்திற்கான கட்டணம் இன்னும் வரையறுக்கப்படவில்லை.",
-    paidInFull: "முழுமையாக செலுத்தப்பட்டது! 🎉",
+    paidInFull: "முழுமையாக செலுத்தப்பட்டது! ",
     due: "நிலுவை",
-    successToast: "கட்டணம் வெற்றிகரமாகப் பெறப்பட்டது! ✅",
+    successToast: "கட்டணம் வெற்றிகரமாகப் பெறப்பட்டது! ",
     
     // Common / Table Headers
     receiptCol: "ரசீது எண்",
@@ -204,11 +204,11 @@ const translations = {
     // Reports Page
     reportsHeading: "நிர்வாக அறிக்கைகள்",
     reportsSub: "பள்ளிக் கட்டண வசூல் மற்றும் நிலுவைத் தொகைகளை ஆய்வு செய்க.",
-    pendingDuesTab: "📋 நிலுவைக் கட்டணங்கள்",
-    classCollectionsTab: "🏫 வகுப்புவாரியான வசூல்",
+    pendingDuesTab: " நிலுவைக் கட்டணங்கள்",
+    classCollectionsTab: " வகுப்புவாரியான வசூல்",
     collectNow: "கட்டணம் பெறு",
     sendReminder: "நினைவூட்டல்",
-    whatsappSent: "பெற்றோருக்கு நினைவூட்டல் செய்தி அனுப்பப்பட்டது! 📱",
+    whatsappSent: "பெற்றோருக்கு நினைவூட்டல் செய்தி அனுப்பப்பட்டது! ",
     
     // Settings Page
     settingsSub: "ரசீதுகள் மற்றும் முகப்புத் தலைப்பில் காட்டப்படும் பள்ளி விபரங்களை மாற்றுக.",

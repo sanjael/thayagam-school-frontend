@@ -97,7 +97,7 @@ export default function LoginPage() {
               />
               {/* Fallback icon if logo not found */}
               <div className="hidden h-full w-full items-center justify-center text-4xl text-blue-900 bg-slate-50">
-                🏫
+                
               </div>
             </div>
             

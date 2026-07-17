@@ -7,12 +7,12 @@ import os
 load_dotenv()
 
 DB_HOST     = os.getenv("DB_HOST", "localhost")
-DB_PORT     = os.getenv("DB_PORT", "3306")
-DB_NAME     = os.getenv("DB_NAME", "school_fee_system")
-DB_USER     = os.getenv("DB_USER", "root")
-DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD", "San@2005"))  # encode @ in password
+DB_PORT     = os.getenv("DB_PORT", "5432")
+DB_NAME     = os.getenv("DB_NAME", "postgres")
+DB_USER     = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD", "password"))  # encode @ in password
 
-DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4"
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

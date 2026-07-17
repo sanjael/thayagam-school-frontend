@@ -10,7 +10,7 @@ import {
 import { 
   Download, Printer, FileText, Search, 
   AlertCircle, CheckCircle,
-  Users, IndianRupee, CheckCircle2 
+  Users, IndianRupee, CheckCircle2, MessageCircle
 } from 'lucide-react';
 
 export default function ReportsPage() {
@@ -87,11 +87,11 @@ export default function ReportsPage() {
 
   function handleSendReminder(phone, studentName, balance) {
     if (!phone) {
-      alert("No phone number found!");
+      alert("No phone number found for this student. Please update their profile.");
       return;
     }
-    const message = `Reminder: Outstanding balance for ${studentName} is ${fmt(balance)}.`;
-    window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`);
+    const message = `Dear Parent 👨‍👩‍👧,\nGreetings from *Sri Thayagam Matriculation School* 🏫!\n\nThis is a gentle reminder regarding the pending fee balance for your ward, *${studentName}*.\n\n💰 *Pending Amount:* ${fmt(balance)}\n\nKindly clear the dues at the earliest to ensure uninterrupted services for your child's education 📚.\n\nIf you have already paid, please ignore this message.\nThank you for your cooperation! ✨`;
+    window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`, '_blank');
   }
 
   function handlePrint() {
@@ -104,7 +104,7 @@ export default function ReportsPage() {
     setTimeout(() => {
       setIsGenerating(false);
       setShowGenerateModal(false);
-      setToastMessage('✅ Report Generated Successfully (PDF Ready)');
+      setToastMessage(' Report Generated Successfully (PDF Ready)');
       setTimeout(() => setToastMessage(''), 3000);
     }, 1500);
   }
@@ -256,7 +256,7 @@ export default function ReportsPage() {
                 <option>Custom Range</option>
               </select>
               
-              <button className="p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <button onClick={() => alert('Export feature will be available in the next update!')} className="p-2 border border-slate-200 dark:border-slate-700 rounded-xl bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                 <Download size={18} />
               </button>
             </div>
@@ -338,7 +338,9 @@ export default function ReportsPage() {
                           <td className="px-6 py-4 text-right font-bold text-rose-600">{fmt(p.balance)}</td>
                           <td className="px-6 py-4 text-center print:hidden">
                             <div className="flex justify-center gap-2">
-                              <button onClick={() => handleSendReminder(p.phone, p.student_name, p.balance)} className="p-1.5 text-amber-500 hover:bg-amber-50 rounded-lg transition" title="Send WhatsApp Reminder"><AlertCircle size={18}/></button>
+                              <button onClick={() => handleSendReminder(p.phone, p.student_name, p.balance)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition border border-emerald-200" title="Send WhatsApp Reminder">
+                                <MessageCircle size={14} /> Send Reminder
+                              </button>
                               <button onClick={() => handleCollectNow(p.student_name)} className="px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs rounded-lg hover:bg-slate-800 transition shadow-sm">Collect</button>
                             </div>
                           </td>
@@ -453,7 +455,7 @@ export default function ReportsPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <button type="button" onClick={() => setShowGenerateModal(false)} className="px-5 py-2.5 text-slate-500 font-bold hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition">Cancel</button>
                 <button type="submit" disabled={isGenerating} className="px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold rounded-xl transition shadow-md flex items-center gap-2">
-                  {isGenerating ? <span className="animate-pulse">⚙</span> : <Download size={18} />}
+                  {isGenerating ? <span className="animate-pulse"></span> : <Download size={18} />}
                   {isGenerating ? 'Generating...' : 'Generate PDF'}
                 </button>
               </div>

@@ -67,7 +67,7 @@ class Student(Base):
     admission_no = Column(String(50), unique=True, nullable=False)
     name         = Column(String(150), nullable=False, index=True)
     class_id     = Column(Integer, ForeignKey("classes.id"), nullable=False)
-    gender       = Column(Enum("male", "female", "other"))
+    gender       = Column(Enum("male", "female", "other", name="gender_enum"))
     dob          = Column(Date)
     parent_name  = Column(String(150))
     phone        = Column(String(15))

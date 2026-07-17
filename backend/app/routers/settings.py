@@ -31,16 +31,20 @@ def update_settings(payload: schemas.SchoolSettingsUpdate, db: Session = Depends
     return s
 
 
+import base64
+
 @router.post("/logo", dependencies=[Depends(require_role(["admin"]))])
 def upload_logo(file: UploadFile = File(...), db: Session = Depends(get_db)):
     ext = file.filename.split(".")[-1].lower()
     if ext not in ("png", "jpg", "jpeg"):
         raise HTTPException(400, "Only PNG/JPG allowed")
-    path = f"{UPLOAD_DIR}/school_logo.{ext}"
-    with open(path, "wb") as f:
-        shutil.copyfileobj(file.file, f)
+    
+    content = file.file.read()
+    b64_str = base64.b64encode(content).decode("utf-8")
+    data_uri = f"data:image/{ext};base64,{b64_str}"
+    
     s = db.query(models.SchoolSettings).first()
     if s:
-        s.logo_path = path
+        s.logo_path = data_uri
         db.commit()
-    return {"logo_path": path}
+    return {"logo_path": data_uri}

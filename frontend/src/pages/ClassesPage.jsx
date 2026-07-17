@@ -109,19 +109,8 @@ export default function ClassesPage() {
     load();
   }
 
-  // Mock generator for WOW factor UI
-  const generateMockStats = (id) => {
-     const seed = id * 17;
-     return {
-       students: (seed % 30) + 20, 
-       pending: ((seed % 10) + 1) * 2500,
-       teacher: ['Kumar', 'Radha', 'Priya', 'Karthik', 'Suresh', 'Anita'][seed % 6],
-       room: (seed % 50) + 101
-     }
-  }
-
   const uniqueClassesCount = new Set(classes.map(c => c.name)).size;
-  const mockTotalStudents = classes.reduce((sum, c) => sum + generateMockStats(c.id).students, 0);
+  const totalStudents = classes.reduce((sum, c) => sum + (c.student_count || 0), 0);
 
   return (
     <Layout>
@@ -138,7 +127,7 @@ export default function ClassesPage() {
               onClick={() => setShowAddForm(true)}
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-6 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center gap-2"
             >
-              <span className="text-lg">➕</span> Add New Class
+              <span className="text-lg"></span> Add New Class
             </button>
           )}
         </div>
@@ -146,28 +135,28 @@ export default function ClassesPage() {
         {/* Top Summary Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-amber-200 dark:hover:border-amber-800 transition-colors">
-            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center text-2xl">📚</div>
+            <div className="w-12 h-12 bg-amber-50 dark:bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center text-2xl"></div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Classes</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">{uniqueClassesCount}</p>
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-blue-200 dark:hover:border-blue-800 transition-colors">
-            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center text-2xl">👨‍🎓</div>
+            <div className="w-12 h-12 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center text-2xl">‍</div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Total Students</p>
-              <p className="text-2xl font-black text-slate-900 dark:text-white">{mockTotalStudents}</p>
+              <p className="text-2xl font-black text-slate-900 dark:text-white">{totalStudents}</p>
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-emerald-200 dark:hover:border-emerald-800 transition-colors">
-            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl">🏫</div>
+            <div className="w-12 h-12 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 rounded-2xl flex items-center justify-center text-2xl"></div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Active Sections</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">{classes.length}</p>
             </div>
           </div>
           <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-4 hover:border-purple-200 dark:hover:border-purple-800 transition-colors">
-            <div className="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center text-2xl">🟢</div>
+            <div className="w-12 h-12 bg-purple-50 dark:bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center text-2xl"></div>
             <div>
               <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Occupied</p>
               <p className="text-2xl font-black text-slate-900 dark:text-white">{classes.length}</p>
@@ -178,7 +167,7 @@ export default function ClassesPage() {
         {/* Search & Filter Bar */}
         <div className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
           <div className="flex-1 relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></span>
             <input 
               type="text" 
               placeholder="Search Class or Section..." 
@@ -201,10 +190,8 @@ export default function ClassesPage() {
           </select>
         </div>
 
-        {/* Classes Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" ref={dropdownRef}>
           {filteredClasses.map((c) => {
-            const stats = generateMockStats(c.id);
             return (
               <div key={c.id} className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 p-6 shadow-sm hover:shadow-xl hover:shadow-amber-500/5 hover:border-amber-200 dark:hover:border-amber-800 transition-all group relative">
                 
@@ -221,7 +208,6 @@ export default function ClassesPage() {
                           {c.section || 'No Section'}
                         </span>
                       </h3>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-1">Room {stats.room}</p>
                     </div>
                   </div>
                   
@@ -236,14 +222,14 @@ export default function ClassesPage() {
                     {activeDropdown === c.id && (
                       <div className="absolute right-0 mt-2 w-36 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-700 z-50 overflow-hidden animate-fade-in">
                         <button className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                          ✏️ Edit
+                          ️ Edit
                         </button>
                         <button className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition flex items-center gap-2">
-                          📦 Archive
+                           Archive
                         </button>
                         {user?.role === 'admin' && (
                           <button onClick={() => handleDelete(c.id)} className="w-full text-left px-4 py-3 text-xs font-bold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-900/20 transition flex items-center gap-2 border-t border-slate-50 dark:border-slate-700/50">
-                            🗑 Delete
+                             Delete
                           </button>
                         )}
                       </div>
@@ -251,24 +237,14 @@ export default function ClassesPage() {
                   </div>
                 </div>
 
-                {/* Info Grid */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 group-hover:bg-blue-50 dark:group-hover:bg-blue-900/10 transition-colors">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">👨‍🎓 Students</p>
-                    <p className="text-xl font-black text-slate-900 dark:text-white mt-1">{stats.students}</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">Students</p>
+                    <p className="text-xl font-black text-slate-900 dark:text-white mt-1">{c.student_count || 0}</p>
                   </div>
                   <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 group-hover:bg-rose-50 dark:group-hover:bg-rose-900/10 transition-colors">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">💰 Pending Fees</p>
-                    <p className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1">₹{stats.pending.toLocaleString()}</p>
-                  </div>
-                  <div className="col-span-2 bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-500 flex items-center justify-center font-bold text-sm border border-amber-200 dark:border-amber-800">
-                      👨‍🏫
-                    </div>
-                    <div>
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Class Teacher</p>
-                      <p className="text-sm font-bold text-slate-800 dark:text-slate-200 mt-0.5">{stats.teacher}</p>
-                    </div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide flex items-center gap-1.5">Pending Fees</p>
+                    <p className="text-xl font-black text-rose-600 dark:text-rose-400 mt-1">₹{(c.pending_fees || 0).toLocaleString()}</p>
                   </div>
                 </div>
 
@@ -278,13 +254,13 @@ export default function ClassesPage() {
                     to={`/classes/${c.id}`} 
                     className="flex-1 bg-amber-50 dark:bg-amber-500/10 hover:bg-amber-100 dark:hover:bg-amber-500/20 text-amber-700 dark:text-amber-500 py-3 rounded-2xl text-xs font-black transition-colors text-center flex items-center justify-center gap-2 border border-amber-200/50 dark:border-amber-800/30"
                   >
-                    <span className="text-base">👁</span> View Students
+                    <span className="text-base"></span> View Students
                   </Link>
                   <Link 
                     to={`/reports/class-wise?class_id=${c.id}`} 
                     className="flex-1 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-700 dark:text-indigo-400 py-3 rounded-2xl text-xs font-black transition-colors text-center flex items-center justify-center gap-2 border border-indigo-200/50 dark:border-indigo-800/30"
                   >
-                    <span className="text-base">📊</span> Fee Report
+                    <span className="text-base"></span> Fee Report
                   </Link>
                 </div>
               </div>
@@ -293,7 +269,7 @@ export default function ClassesPage() {
           
           {filteredClasses.length === 0 && (
             <div className="col-span-full py-16 flex flex-col items-center justify-center bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-100 dark:border-slate-800 border-dashed">
-              <span className="text-5xl mb-4">🏫</span>
+              <span className="text-5xl mb-4"></span>
               <h3 className="text-lg font-bold text-slate-700 dark:text-slate-300">No classes found</h3>
               <p className="text-sm text-slate-500 mt-1">Try adjusting your search or filters.</p>
             </div>
@@ -306,20 +282,20 @@ export default function ClassesPage() {
             <div className="w-full max-w-lg rounded-[2.5rem] bg-white dark:bg-slate-900 p-8 shadow-2xl border border-slate-100 dark:border-slate-800 relative">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
-                  <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-500 p-2.5 rounded-2xl shadow-sm border border-amber-200 dark:border-amber-800">📚</span> 
+                  <span className="bg-amber-100 dark:bg-amber-500/20 text-amber-600 dark:text-amber-500 p-2.5 rounded-2xl shadow-sm border border-amber-200 dark:border-amber-800"></span> 
                   Add New Class
                 </h2>
                 <button 
                   onClick={() => setShowAddForm(false)}
                   className="text-slate-400 hover:text-slate-900 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 p-3 rounded-full transition"
                 >
-                  ✕
+                  X
                 </button>
               </div>
 
               {error && (
                 <div className="mb-6 rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 p-4 text-xs text-rose-600 dark:text-rose-400 font-bold flex items-center gap-2">
-                  <span className="text-base">⚠️</span> {error}
+                  <span className="text-base">️</span> {error}
                 </div>
               )}
 
@@ -370,7 +346,7 @@ export default function ClassesPage() {
                       Class Teacher <span className="text-slate-400 lowercase normal-case text-[9px]">(Optional)</span>
                     </label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">👨‍🏫</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">‍</span>
                       <input
                         value={teacher} 
                         onChange={(e) => setTeacher(e.target.value)}
@@ -388,7 +364,7 @@ export default function ClassesPage() {
                   </button>
                   <button type="submit"
                     className="rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-8 py-3.5 text-sm font-black transition shadow-xl shadow-amber-500/30 flex items-center gap-2">
-                    <span className="text-lg">➕</span> Add Class
+                    <span className="text-lg"></span> Add Class
                   </button>
                 </div>
               </form>

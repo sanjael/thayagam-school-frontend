@@ -78,7 +78,7 @@ export default function SignupPage() {
                 onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
               />
               <div className="hidden h-full w-full items-center justify-center text-4xl text-blue-900 bg-slate-50">
-                🏫
+                
               </div>
             </div>
             
