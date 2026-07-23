@@ -90,7 +90,9 @@ def get_pending(academic_year: Optional[str] = Query(None), class_id: Optional[i
             balance = total_fee - total_paid
             if balance > 0:
                 results.append({
+                    "student_id": s.id,
                     "student_name": s.name,
+                    "admission_no": s.admission_no,
                     "class": s.class_.name if s.class_ else "",
                     "term": term,
                     "total_fee": float(total_fee),

@@ -20,6 +20,24 @@ app = FastAPI(
 def on_startup():
     start_scheduler()
 
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+import json
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request, exc):
+    err = exc.errors()
+    body = b""
+    try:
+        body = await request.body()
+    except Exception:
+        pass
+    print("VALIDATION ERROR:", err, "BODY:", body)
+    with open("validation_errors.log", "a") as f:
+        f.write(json.dumps(err) + "\n")
+        f.write("BODY: " + body.decode('utf-8', 'ignore') + "\n")
+    return JSONResponse(status_code=422, content={"detail": err})
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "https://thayagam-school-frontend.vercel.app"],

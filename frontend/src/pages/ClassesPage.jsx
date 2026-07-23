@@ -22,9 +22,13 @@ export default function ClassesPage() {
   // Search & Filter
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const initialFilter = searchParams.get('filter') || '';
-  const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState(initialFilter || 'All Classes');
+  const initialSearch = searchParams.get('search') || '';
+  const initialCategory = searchParams.get('filter') || 'All Classes';
+  const initialExactClass = searchParams.get('exact_class') || '';
+  
+  const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const [categoryFilter, setCategoryFilter] = useState(initialCategory);
+  const [exactClassFilter, setExactClassFilter] = useState(initialExactClass);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
   // Click outside listener for dropdown
@@ -38,6 +42,14 @@ export default function ClassesPage() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Sync URL params to state on navigation
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    setSearchQuery(params.get('search') || '');
+    setCategoryFilter(params.get('filter') || 'All Classes');
+    setExactClassFilter(params.get('exact_class') || '');
+  }, [location.search]);
 
   function load() { 
     api.getClasses().then(data => {
@@ -63,6 +75,10 @@ export default function ClassesPage() {
   // Filter & Search Logic
   const filteredClasses = useMemo(() => {
     return classes.filter(c => {
+       if (exactClassFilter && c.name !== exactClassFilter) {
+         return false;
+       }
+
        const upper = c.name.toUpperCase();
        let cat = 'All Classes';
        if (upper.includes('KG')) cat = 'Pre-Primary';
@@ -89,7 +105,7 @@ export default function ClassesPage() {
        }
        return true;
     });
-  }, [classes, categoryFilter, searchQuery]);
+  }, [classes, categoryFilter, searchQuery, exactClassFilter]);
 
   async function handleAdd(e) {
     e.preventDefault();
@@ -122,7 +138,7 @@ export default function ClassesPage() {
             <h1 className="text-2xl font-black text-slate-900 dark:text-white">Classes & Sections</h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage school grades, capacity, and assignments</p>
           </div>
-          {user?.role !== 'principal' && (
+          {user?.role === 'admin' && (
             <button 
               onClick={() => setShowAddForm(true)}
               className="bg-amber-500 hover:bg-amber-600 text-slate-950 px-6 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center gap-2"
@@ -212,6 +228,7 @@ export default function ClassesPage() {
                   </div>
                   
                   {/* Action Dropdown */}
+                  {user?.role === 'admin' && (
                   <div className="relative">
                     <button 
                       onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === c.id ? null : c.id); }} 
@@ -235,6 +252,7 @@ export default function ClassesPage() {
                       </div>
                     )}
                   </div>
+                  )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 mb-6">

@@ -18,6 +18,8 @@ class PaymentMode(str, enum.Enum):
     online = "online"
     cheque = "cheque"
     dd     = "dd"
+    upi    = "upi"
+    card   = "card"
 
 
 class Term(str, enum.Enum):

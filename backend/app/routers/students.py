@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 from app.database import get_db
 from app import models, schemas
@@ -8,9 +9,28 @@ from app.auth import require_role
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
-def _enrich(s: models.Student) -> schemas.StudentOut:
+def _enrich(s: models.Student, db: Session = None, ay: str = None) -> schemas.StudentOut:
     out = schemas.StudentOut.from_orm(s)
-    out.class_name = s.class_.name if s.class_ else None
+    if s.class_:
+        out.class_name = f"{s.class_.name} - {s.class_.section}" if s.class_.section else s.class_.name
+    else:
+        out.class_name = None
+        
+    if db and ay:
+        total_fee = db.query(func.sum(models.FeeStructure.amount)).filter(
+            models.FeeStructure.class_id == s.class_id,
+            models.FeeStructure.academic_year == ay
+        ).scalar() or 0
+        
+        total_paid = db.query(func.sum(models.FeePayment.amount_paid)).filter(
+            models.FeePayment.student_id == s.id,
+            models.FeePayment.academic_year == ay,
+            models.FeePayment.is_cancelled == False
+        ).scalar() or 0
+        
+        bal = float(total_fee - total_paid)
+        out.pending_fees = bal if bal > 0 else 0.0
+        
     return out
 
 
@@ -22,6 +42,7 @@ def get_students(
     status: Optional[str] = Query("active"),  # active | inactive | all
     db: Session = Depends(get_db),
 ):
+    ay = db.query(models.SchoolSettings.current_academic_year).scalar() or "2024-2025"
     q = db.query(models.Student)
     if status == "active":
         q = q.filter(models.Student.is_active == True)
@@ -38,7 +59,7 @@ def get_students(
         q = q.filter(models.Student.class_id == class_id)
     if gender:
         q = q.filter(models.Student.gender == gender)
-    return [_enrich(s) for s in q.order_by(models.Student.name).all()]
+    return [_enrich(s, db, ay) for s in q.order_by(models.Student.name).all()]
 
 
 @router.get("/{student_id}", response_model=schemas.StudentOut)

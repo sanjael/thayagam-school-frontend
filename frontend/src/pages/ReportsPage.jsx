@@ -76,10 +76,10 @@ export default function ReportsPage() {
   }, [pending, searchQuery, classFilter, termFilter]);
 
   // Actions
-  function handleCollectNow(studentName) {
-    api.getStudents({ search: studentName }).then((res) => {
-      if (res.length > 0) {
-        setSelectedStudentForPayment(res[0]);
+  function handleCollectNow(studentId) {
+    api.getStudent(studentId).then((student) => {
+      if (student) {
+        setSelectedStudentForPayment(student);
         navigate('/payments');
       }
     });
@@ -91,7 +91,7 @@ export default function ReportsPage() {
       return;
     }
     const message = `Dear Parent 👨‍👩‍👧,\nGreetings from *Sri Thayagam Matriculation School* 🏫!\n\nThis is a gentle reminder regarding the pending fee balance for your ward, *${studentName}*.\n\n💰 *Pending Amount:* ${fmt(balance)}\n\nKindly clear the dues at the earliest to ensure uninterrupted services for your child's education 📚.\n\nIf you have already paid, please ignore this message.\nThank you for your cooperation! ✨`;
-    window.open(`https://wa.me/91${phone.replace(/\D/g,'')}?text=${encodeURIComponent(message)}`, '_blank');
+    window.open(`https://api.whatsapp.com/send?phone=91${phone.replace(/\D/g,'')}&text=${encodeURIComponent(message)}`, '_blank');
   }
 
   function handlePrint() {
@@ -175,49 +175,6 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 print:hidden">
-          <div className="lg:col-span-2 bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-6">Collection Trend</h3>
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={collectionTrend}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                  <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} tickFormatter={(val) => `₹${val/1000}k`} />
-                  <RechartsTooltip cursor={{fill: '#f1f5f9'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
-                  <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-          
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col items-center">
-            <h3 className="text-sm font-bold text-slate-800 dark:text-white mb-4 w-full text-left">Student Payment Status</h3>
-            <div className="h-64 w-full relative">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={pieData} innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value">
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <RechartsTooltip />
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-3xl font-black text-slate-800 dark:text-white">
-                  {Math.round((paidStudentsCount / (totalStudents || 1)) * 100)}%
-                </span>
-                <span className="text-xs text-slate-500 font-bold">Paid</span>
-              </div>
-            </div>
-            <div className="flex gap-6 mt-4">
-              <div className="flex items-center gap-2 text-sm font-bold"><span className="w-3 h-3 rounded-full bg-emerald-500"></span> Paid</div>
-              <div className="flex items-center gap-2 text-sm font-bold"><span className="w-3 h-3 rounded-full bg-rose-500"></span> Pending</div>
-            </div>
-          </div>
-        </div>
 
         {/* Main Content Area */}
         <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
@@ -227,7 +184,7 @@ export default function ReportsPage() {
             
             {/* Tabs Dropdown/Buttons */}
             <div className="flex gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-              {['pending', 'classwise', 'daybook', 'ledger'].map(t => (
+              {['pending', 'classwise', 'daybook'].map(t => (
                 <button
                   key={t}
                   onClick={() => setTab(t)}
@@ -237,7 +194,7 @@ export default function ReportsPage() {
                 >
                   {t === 'pending' ? 'Pending Fees' : 
                    t === 'classwise' ? 'Collection by Class' : 
-                   t === 'daybook' ? 'Daily Report' : 'Student Ledger'}
+                   'Daily Report'}
                 </button>
               ))}
             </div>
@@ -341,7 +298,7 @@ export default function ReportsPage() {
                               <button onClick={() => handleSendReminder(p.phone, p.student_name, p.balance)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 rounded-lg transition border border-emerald-200" title="Send WhatsApp Reminder">
                                 <MessageCircle size={14} /> Send Reminder
                               </button>
-                              <button onClick={() => handleCollectNow(p.student_name)} className="px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs rounded-lg hover:bg-slate-800 transition shadow-sm">Collect</button>
+                              <button onClick={() => handleCollectNow(p.student_id)} className="px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs rounded-lg hover:bg-slate-800 transition shadow-sm">Collect</button>
                             </div>
                           </td>
                         </tr>
@@ -403,14 +360,6 @@ export default function ReportsPage() {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            )}
-
-            {tab === 'ledger' && (
-              <div className="p-16 text-center text-slate-500">
-                <FileText size={48} className="mx-auto text-slate-300 mb-4" />
-                <h3 className="text-lg font-bold text-slate-800 dark:text-white">Student Ledger Available Soon</h3>
-                <p>Detailed student-wise ledger functionality will be available in the next update.</p>
               </div>
             )}
           </div>

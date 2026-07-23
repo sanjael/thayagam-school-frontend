@@ -408,8 +408,10 @@ export default function Layout({ children }) {
         </header>
 
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-950 p-6 md:p-8 print:p-0 print:overflow-visible print:bg-white print:text-black">
-          {children}
+        <main className="flex-1 overflow-y-auto bg-slate-50/50 dark:bg-slate-950 print:p-0 print:overflow-visible print:bg-white print:text-black">
+          <div className="max-w-7xl mx-auto w-full p-6 md:p-8 print:p-0">
+            {children}
+          </div>
         </main>
       </div>
 

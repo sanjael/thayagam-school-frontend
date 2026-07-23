@@ -12,7 +12,7 @@ DB_NAME     = os.getenv("DB_NAME", "postgres")
 DB_USER     = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = quote_plus(os.getenv("DB_PASSWORD", "password"))  # encode @ in password
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

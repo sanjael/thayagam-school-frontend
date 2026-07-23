@@ -81,17 +81,36 @@ export default function PaymentsPage() {
       }
       if (filterMode && p.payment_mode !== filterMode) return false;
       
-      const percent = Math.round((p.amount_paid / p.total_fee) * 100);
+      const total = Number(p.total_fee) || 0;
+      const paid = Number(p.amount_paid) || 0;
+      const remaining = total - paid;
+      
       if (filterStatus) {
-        if (filterStatus === 'Paid' && percent !== 100) return false;
-        if (filterStatus === 'Pending' && percent > 0) return false;
-        if (filterStatus === 'Partial' && (percent === 100 || percent === 0)) return false;
+        if (filterStatus === 'Paid' && remaining > 0) return false;
+        if (filterStatus === 'Pending' && remaining <= 0) return false;
+        if (filterStatus === 'Partial' && remaining <= 0) return false;
       }
 
-      if (filterDate !== 'All') {
-        const today = new Date().toISOString().slice(0, 10);
-        if (filterDate === 'Today' && p.payment_date !== today) return false;
-        // mock logic for others if needed
+      if (filterDate !== 'All' && p.payment_date) {
+        const todayStr = new Date().toISOString().slice(0, 10);
+        
+        if (filterDate === 'Today') {
+          if (p.payment_date !== todayStr) return false;
+        } else if (filterDate === 'Yesterday') {
+          const y = new Date();
+          y.setDate(y.getDate() - 1);
+          if (p.payment_date !== y.toISOString().slice(0, 10)) return false;
+        } else if (filterDate === 'This Week') {
+          const pDate = new Date(p.payment_date);
+          const d = new Date();
+          const startOfWeek = new Date(d.setDate(d.getDate() - d.getDay()));
+          startOfWeek.setHours(0,0,0,0);
+          if (pDate < startOfWeek) return false;
+        } else if (filterDate === 'This Month') {
+          const pDate = new Date(p.payment_date);
+          const d = new Date();
+          if (pDate.getMonth() !== d.getMonth() || pDate.getFullYear() !== d.getFullYear()) return false;
+        }
       }
 
       return true;
@@ -102,9 +121,10 @@ export default function PaymentsPage() {
   const todayPayments = payments.filter(p => p.payment_date === today);
   const todayCollection = summary?.today_collected || 0;
   const totalPendingMock = summary?.total_balance || 0;
+  const totalCollectedMock = summary?.total_collected || 0;
 
   function searchStudents(q) {
-    if (q.length < 3) { setStudents([]); return; }
+    if (!q || q.length < 3) { setStudents([]); return; }
     api.getStudents({ search: q }).then(setStudents).catch(() => {});
   }
   useEffect(() => { searchStudents(studentSearch); }, [studentSearch]);
@@ -168,15 +188,28 @@ export default function PaymentsPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    
+    const parsedStudentId = parseInt(form.student_id, 10);
+    if (!parsedStudentId) {
+      setError("Please select a valid student first.");
+      return;
+    }
+    
+    const parsedAmount = parseFloat(form.amount_paid);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      setError("Please enter a valid amount to pay.");
+      return;
+    }
+    
     try {
       await api.createPayment({
         ...form,
-        student_id: Number(form.student_id),
-        amount_paid: Number(form.amount_paid),
+        student_id: parsedStudentId,
+        amount_paid: parsedAmount,
         fine: Number(form.fine || 0),
         discount: Number(form.discount || 0),
       });
-      setToastMessage(t('feeCollectedSuccess'));
+      setToastMessage('Fee collected successfully!');
       setTimeout(() => setToastMessage(''), 4000);
       setShowForm(false); 
       setForm(EMPTY); 
@@ -339,7 +372,7 @@ export default function PaymentsPage() {
 
         {/* Payments Table */}
         <section className="bg-white dark:bg-slate-900 rounded-[2rem] border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden" ref={tableRef}>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-h-[400px] pb-24">
             <table className="w-full min-w-max text-left text-sm text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950 text-[10px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
@@ -443,7 +476,59 @@ export default function PaymentsPage() {
                         {activeDropdown === p.id && (
                           <div className="absolute right-12 top-2 w-56 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-2xl rounded-2xl z-50 text-left overflow-hidden animate-fade-in">
                             <button onClick={() => setPreviewReceipt(p)} className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
-                              <span className="text-base"></span> View Receipt
+                              <span className="text-base">👁️</span> View Receipt
+                            </button>
+                            <button onClick={() => {
+                              const printWindow = window.open('', '_blank');
+                              printWindow.document.write(`
+                                <html>
+                                  <head>
+                                    <title>Fee Receipt - ${p.student_name}</title>
+                                    <style>
+                                      body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; color: #1e293b; }
+                                      .header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 20px; margin-bottom: 30px; }
+                                      .header h2 { margin: 0; font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: 1px; }
+                                      .header p { margin: 8px 0 0; color: #64748b; font-size: 13px; font-weight: bold; letter-spacing: 2px; }
+                                      .row { display: flex; justify-content: space-between; margin-bottom: 16px; font-size: 15px; }
+                                      .row span:first-child { color: #64748b; font-weight: 500; }
+                                      .row span:last-child { font-weight: 700; color: #0f172a; }
+                                      .amount { background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; margin-top: 30px; }
+                                      .amount-label { color: #64748b; font-size: 13px; text-transform: uppercase; font-weight: 800; letter-spacing: 1px; }
+                                      .amount-val { font-size: 28px; font-weight: 900; color: #10b981; }
+                                      .footer { margin-top: 50px; text-align: center; color: #94a3b8; font-size: 13px; line-height: 1.6; }
+                                    </style>
+                                  </head>
+                                  <body>
+                                    <div class="header">
+                                      <h2>SRI THAYAGAM MATRICULATION SCHOOL</h2>
+                                      <p>OFFICIAL FEE RECEIPT</p>
+                                    </div>
+                                    <div class="row"><span>Receipt No:</span> <span>${p.receipt_no}</span></div>
+                                    <div class="row"><span>Date:</span> <span>${p.payment_date}</span></div>
+                                    <div class="row"><span>Student Name:</span> <span>${p.student_name}</span></div>
+                                    <div class="row"><span>Class:</span> <span>${p.class_name}</span></div>
+                                    <div class="row"><span>Term:</span> <span>${p.term}</span></div>
+                                    <div class="row"><span>Payment Mode:</span> <span style="text-transform: capitalize;">${p.payment_mode}</span></div>
+                                    
+                                    <div class="amount">
+                                      <div class="amount-label">Total Amount Paid</div>
+                                      <div class="amount-val">Rs. ${p.amount_paid}</div>
+                                    </div>
+                                    <div class="footer">
+                                      <strong>Thank you for your payment.</strong><br>
+                                      This is a computer generated receipt and does not require a physical signature.
+                                    </div>
+                                  </body>
+                                </html>
+                              `);
+                              printWindow.document.close();
+                              printWindow.focus();
+                              setTimeout(() => {
+                                printWindow.print();
+                                printWindow.onafterprint = () => printWindow.close();
+                              }, 250);
+                            }} className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
+                              <span className="text-base">🖨️</span> Print Receipt
                             </button>
                             <a href={api.receiptPdfUrl(p.id)} target="_blank" rel="noreferrer" className="w-full px-5 py-3 text-xs font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center gap-3">
                               <span className="text-base">⬇</span> Download PDF
@@ -453,7 +538,7 @@ export default function PaymentsPage() {
                               <button onClick={() => {
                                 if (!p.phone) { alert('No phone number found for this student. Please update their profile.'); return; }
                                 const msg = `Dear Parent 👨‍👩‍👧,\nGreetings from *Sri Thayagam Matriculation School* 🏫!\n\nWe have successfully received the fee payment for your ward, *${p.student_name}*.\n\n🧾 *Receipt No:* ${p.receipt_no}\n💰 *Amount Paid:* ₹${p.amount_paid}\n📅 *Date:* ${p.payment_date}\n\nThank you for your prompt payment! ✨`;
-                                window.open(`https://wa.me/91${p.phone.replace(/\\D/g,'')}?text=${encodeURIComponent(msg)}`, '_blank');
+                                window.open(`https://api.whatsapp.com/send?phone=91${p.phone.replace(/\\D/g,'')}&text=${encodeURIComponent(msg)}`, '_blank');
                               }} className="w-full px-4 py-2.5 text-xs font-bold text-emerald-600 hover:bg-emerald-100 rounded-xl flex items-center gap-2 transition">
                                 <MessageCircle size={16} /> WhatsApp Receipt
                               </button>
@@ -466,9 +551,11 @@ export default function PaymentsPage() {
                               </button>
                             </div>
 
-                            <button onClick={() => setCancelConfirmId(p.id)} className="w-full px-5 py-4 text-xs font-black text-rose-600 bg-rose-50 hover:bg-rose-100 border-t border-rose-100 flex items-center gap-3 transition">
-                              <span className="text-base"></span> Cancel Payment
-                            </button>
+                            {user?.role === 'admin' && (
+                              <button onClick={() => setCancelConfirmId(p.id)} className="w-full px-5 py-4 text-xs font-black text-rose-600 bg-rose-50 hover:bg-rose-100 border-t border-rose-100 flex items-center gap-3 transition">
+                                <span className="text-base"></span> Cancel Payment
+                              </button>
+                            )}
                           </div>
                         )}
                         

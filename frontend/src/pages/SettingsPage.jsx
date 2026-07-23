@@ -4,7 +4,7 @@ import { api, BASE_URL } from '../api';
 import { useApp } from '../AppContext';
 import { 
   Building2, UserCog, Mail, Receipt, HardDrive, 
-  Save, RotateCcw, AlertTriangle, Eye, ImagePlus
+  Save, RotateCcw, AlertTriangle, Eye, ImagePlus, Download
 } from 'lucide-react';
 
 const TABS = [
@@ -46,13 +46,19 @@ export default function SettingsPage() {
   const [isDirty, setIsDirty] = useState(false);
   const [isBackingUp, setIsBackingUp] = useState(false);
   
+  const [showBackupModal, setShowBackupModal] = useState(false);
+  const [backupOption, setBackupOption] = useState('daily');
+  const [customDate, setCustomDate] = useState('');
+
   const fileInputRef = useRef(null);
 
   // Load Data
   useEffect(() => {
     loadSettings();
-    
-    // Unsaved changes warning
+  }, []);
+
+  // Unsaved changes warning
+  useEffect(() => {
     const handleBeforeUnload = (e) => {
       if (isDirty) {
         e.preventDefault();
@@ -74,7 +80,8 @@ export default function SettingsPage() {
   async function loadSettings() {
     try {
       const s = await api.getSettings();
-      const extras = JSON.parse(localStorage.getItem('thayagam_extra_settings')) || DEFAULT_EXTRAS;
+      const savedExtras = JSON.parse(localStorage.getItem('thayagam_extra_settings')) || {};
+      const extras = { ...DEFAULT_EXTRAS, ...savedExtras };
       
       const loaded = {
         school_name: s.school_name || '', address: s.address || '', 
@@ -92,7 +99,18 @@ export default function SettingsPage() {
         setCurrentLogoPath(s.logo_path);
         setLogoPreview(`${BASE_URL}/${s.logo_path}`);
       }
-    } catch (err) { console.error(err); }
+    } catch (err) {
+      console.error("Settings not found, using defaults", err);
+      const savedExtras = JSON.parse(localStorage.getItem('thayagam_extra_settings')) || {};
+      const extras = { ...DEFAULT_EXTRAS, ...savedExtras };
+      const loaded = {
+        school_name: '', address: '', phone: '', email: '',
+        correspondent_name: '', principal_name: '', current_academic_year: '2024-2025',
+        ...extras
+      };
+      setForm(loaded);
+      setOriginalForm(loaded);
+    }
   }
 
   // Handlers
@@ -149,11 +167,22 @@ export default function SettingsPage() {
     
     try {
       // 1. Save core to Backend
-      await api.updateSettings({
+      const updatePayload = {
         school_name: form.school_name, address: form.address, phone: form.phone,
         email: form.email, correspondent_name: form.correspondent_name,
         principal_name: form.principal_name, current_academic_year: form.current_academic_year
-      });
+      };
+      
+      try {
+        await api.updateSettings(updatePayload);
+      } catch(err) {
+        if(err.message.includes('404')) {
+           // fallback if 404
+           await api.updateSettings(updatePayload);
+        } else {
+           throw err;
+        }
+      }
       
       // 2. Upload Logo
       if (logoFile) {
@@ -189,18 +218,34 @@ export default function SettingsPage() {
     setTimeout(() => setToast(''), 3000);
   }
 
-  function handleBackup() {
+  function triggerBackup() {
+    setShowBackupModal(false);
     setIsBackingUp(true);
     setTimeout(() => {
-      const now = new Date().toLocaleString();
-      setForm(p => ({ ...p, last_backup: now }));
-      const extras = JSON.parse(localStorage.getItem('thayagam_extra_settings')) || DEFAULT_EXTRAS;
-      extras.last_backup = now;
+      let dateString = new Date().toLocaleString();
+      if (backupOption === 'custom' && customDate) {
+         dateString = `Custom Backup (${customDate})`;
+      } else if (backupOption === 'monthly') {
+         dateString = `Monthly Backup (${new Date().toLocaleString('default', { month: 'long', year: 'numeric' })})`;
+      } else {
+         dateString = `Daily Backup (${new Date().toLocaleDateString()})`;
+      }
+      
+      const savedExtras = JSON.parse(localStorage.getItem('thayagam_extra_settings')) || {};
+      const extras = { ...DEFAULT_EXTRAS, ...savedExtras };
+      extras.last_backup = dateString;
       localStorage.setItem('thayagam_extra_settings', JSON.stringify(extras));
-      setOriginalForm(p => ({ ...p, last_backup: now }));
+      
+      setForm(p => ({ ...p, last_backup: dateString }));
+      setOriginalForm(p => ({ ...p, last_backup: dateString }));
       setIsBackingUp(false);
-      showToast(' Backup Completed Successfully');
-    }, 2000);
+      showToast(' Backup Generated Successfully!');
+      
+      // Download PDF Backup
+      const token = localStorage.getItem('thayagam_token');
+      const url = `${BASE_URL}/settings/backup/pdf?type=${backupOption}&date=${customDate}&token=${token}`;
+      window.open(url, '_blank');
+    }, 1500);
   }
 
   return (
@@ -303,11 +348,16 @@ export default function SettingsPage() {
                     
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Academic Year</label>
-                      <select required value={form.current_academic_year} onChange={f('current_academic_year')} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-amber-500 font-semibold text-sm">
-                        <option value="2024-2025">2024 - 2025</option>
-                        <option value="2025-2026">2025 - 2026</option>
-                        <option value="2026-2027">2026 - 2027</option>
-                      </select>
+                      <input required type="text" list="academic-years" placeholder="e.g. 2024-2025" value={form.current_academic_year} onChange={f('current_academic_year')} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 outline-none focus:border-amber-500 font-semibold text-sm" />
+                      <datalist id="academic-years">
+                        <option value="2023-2024" />
+                        <option value="2024-2025" />
+                        <option value="2025-2026" />
+                        <option value="2026-2027" />
+                        <option value="2027-2028" />
+                        <option value="2028-2029" />
+                        <option value="2029-2030" />
+                      </datalist>
                     </div>
                     <div>
                       <label className="block text-xs font-bold text-slate-500 uppercase mb-1">School Code</label>
@@ -454,7 +504,7 @@ export default function SettingsPage() {
                     <p className="text-lg font-black text-slate-900 dark:text-white mt-1 mb-6">{form.last_backup}</p>
                     <button 
                       type="button" 
-                      onClick={handleBackup} 
+                      onClick={() => setShowBackupModal(true)} 
                       disabled={isBackingUp}
                       className="px-6 py-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl text-sm font-bold shadow-sm w-full transition flex justify-center items-center gap-2 disabled:opacity-70"
                     >
@@ -480,6 +530,57 @@ export default function SettingsPage() {
         </div>
 
       </div>
+
+      {/* Backup Options Modal */}
+      {showBackupModal && (
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 p-6">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <HardDrive size={20} className="text-amber-500"/> Configure Backup
+              </h2>
+              <button type="button" onClick={() => setShowBackupModal(false)} className="text-slate-400 hover:text-slate-600 font-bold">X</button>
+            </div>
+            
+            <div className="space-y-4">
+              <label className="flex items-center gap-3 p-4 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <input type="radio" name="backup_type" value="daily" checked={backupOption === 'daily'} onChange={() => setBackupOption('daily')} className="w-4 h-4 text-amber-500" />
+                <div>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">Daily Backup (Today)</p>
+                  <p className="text-xs text-slate-500">Backup all data up to today.</p>
+                </div>
+              </label>
+              
+              <label className="flex items-center gap-3 p-4 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <input type="radio" name="backup_type" value="monthly" checked={backupOption === 'monthly'} onChange={() => setBackupOption('monthly')} className="w-4 h-4 text-amber-500" />
+                <div>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">Monthly Backup</p>
+                  <p className="text-xs text-slate-500">Backup data for the current month.</p>
+                </div>
+              </label>
+              
+              <label className="flex items-center gap-3 p-4 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition">
+                <input type="radio" name="backup_type" value="custom" checked={backupOption === 'custom'} onChange={() => setBackupOption('custom')} className="w-4 h-4 text-amber-500" />
+                <div>
+                  <p className="text-sm font-bold text-slate-900 dark:text-white">Custom Date</p>
+                  <p className="text-xs text-slate-500">Select a specific date to backup.</p>
+                </div>
+              </label>
+              
+              {backupOption === 'custom' && (
+                <div className="pt-2 pl-10 animate-fade-in">
+                  <input type="date" value={customDate} onChange={(e) => setCustomDate(e.target.value)} className="w-full px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-sm font-bold outline-none focus:border-amber-500" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex gap-3 mt-8">
+              <button type="button" onClick={() => setShowBackupModal(false)} className="flex-1 py-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold transition">Cancel</button>
+              <button type="button" onClick={triggerBackup} className="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-sm font-bold shadow-sm transition">Start Backup</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Receipt Preview Modal */}
       {showReceiptPreview && (

@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import { api } from '../api';
 import { useApp } from '../AppContext';
@@ -11,7 +12,8 @@ const EMPTY = {
 };
 
 export default function StudentsPage() {
-  const { t } = useApp();
+  const { t, setSelectedStudentForPayment } = useApp();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const [classes, setClasses] = useState([]);
@@ -284,7 +286,7 @@ export default function StudentsPage() {
               <button onClick={exportToCSV} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:bg-slate-50 dark:hover:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 transition flex items-center gap-1.5 shadow-sm">
                  <FileSpreadsheet size={16} /> Export CSV
               </button>
-              {user?.role !== 'principal' && (
+              {user?.role === 'admin' && (
                 <button
                   onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY); }}
                   className="rounded-2xl bg-amber-500 hover:bg-amber-600 text-slate-950 px-4 py-2 text-xs font-bold transition shadow-md shadow-amber-500/20 flex items-center gap-1.5"
@@ -309,7 +311,7 @@ export default function StudentsPage() {
               className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-2.5 text-xs font-bold text-slate-600 dark:text-slate-400 outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30"
             >
               <option value="">All Classes</option>
-              {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              {classes.map((c) => <option key={c.id} value={c.id}>{c.section ? `${c.name} - ${c.section}` : c.name}</option>)}
             </select>
             <select
               value={filterGender} onChange={(e) => setFilterGender(e.target.value)}
@@ -352,7 +354,7 @@ export default function StudentsPage() {
           )}
 
           {/* Table Container with scroll */}
-          <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800 max-h-[500px] overflow-y-auto custom-scrollbar relative">
+          <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-100 dark:border-slate-800 max-h-[500px] overflow-y-auto custom-scrollbar relative pb-24">
             <table className="w-full min-w-max text-left text-sm text-slate-700 dark:text-slate-300">
               <thead className="bg-slate-50 dark:bg-slate-950 text-[10px] text-slate-400 font-bold uppercase tracking-wider sticky top-0 z-20 shadow-sm border-b border-slate-100 dark:border-slate-800 after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-slate-200 dark:after:bg-slate-800">
                 <tr>
@@ -366,7 +368,8 @@ export default function StudentsPage() {
                   </th>
                   <th className="px-5 py-3.5">Adm. No</th>
                   <th className="px-5 py-3.5">{t('studentCol')}</th>
-                  <th className="px-5 py-3.5">{t('classCol')}</th>
+                  <th className="px-5 py-3.5">Class & Sec</th>
+                  <th className="px-5 py-3.5">Pending Fees</th>
                   <th className="px-5 py-3.5">{t('parentName')}</th>
                   <th className="px-5 py-3.5">{t('phone')}</th>
                   <th className="px-5 py-3.5 text-center">Status</th>
@@ -400,8 +403,19 @@ export default function StudentsPage() {
                     <td className="px-5 py-3 font-bold text-slate-900 dark:text-slate-100">{s.name}</td>
                     <td className="px-5 py-3">
                       <span className="inline-flex items-center rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2.5 py-1 text-xs font-bold text-slate-600 dark:text-slate-300 shadow-sm">
-                        {s.class_name}
+                        {s.class_name || 'N/A'}
                       </span>
+                    </td>
+                    <td className="px-5 py-3">
+                      {s.pending_fees > 0 ? (
+                        <span className="font-bold text-rose-600 bg-rose-50 dark:bg-rose-500/10 px-2 py-1 rounded-md text-xs">
+                          ₹{s.pending_fees.toLocaleString('en-IN')}
+                        </span>
+                      ) : (
+                        <span className="font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md text-xs">
+                          Nil
+                        </span>
+                      )}
                     </td>
                     <td className="px-5 py-3 text-slate-600 dark:text-slate-400 font-medium relative">
                       <span className="peer cursor-default">{s.parent_name || '—'}</span>
@@ -431,12 +445,12 @@ export default function StudentsPage() {
                         <button onClick={() => setViewStudent(s)} className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-slate-800 rounded-lg transition" title="View Profile">
                           <Eye size={16} />
                         </button>
-                        {user?.role !== 'principal' && (
+                        {user?.role === 'admin' && (
                           <button onClick={() => openEdit(s)} className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-slate-800 rounded-lg transition" title="Edit">
                             <Edit size={16} />
                           </button>
                         )}
-                        <button className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg transition" title="Fee History">
+                        <button onClick={() => { setSelectedStudentForPayment(s); navigate('/payments'); }} className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-slate-800 rounded-lg transition" title="Fee History">
                           <History size={16} />
                         </button>
                         {user?.role === 'admin' && (
@@ -552,7 +566,7 @@ export default function StudentsPage() {
                   </div>
                 </div>
                 <div className="mt-8 flex gap-3">
-                  <button className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+                  <button onClick={() => { setSelectedStudentForPayment(viewStudent); navigate('/payments'); }} className="flex-1 bg-amber-500 hover:bg-amber-600 text-slate-950 py-3 rounded-2xl text-sm font-black transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
                     <span className="text-lg"></span> View Fee History
                   </button>
                 </div>
@@ -613,7 +627,7 @@ export default function StudentsPage() {
                   <select required value={form.class_id} onChange={f('class_id')}
                     className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-3 text-sm outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500/30 text-slate-900 dark:text-slate-100 font-bold transition shadow-sm">
                     <option value="">Select class</option>
-                    {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    {classes.map((c) => <option key={c.id} value={c.id}>{c.section ? `${c.name} - ${c.section}` : c.name}</option>)}
                   </select>
                 </div>
 
