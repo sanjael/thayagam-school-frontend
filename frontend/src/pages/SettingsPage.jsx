@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import Layout from '../components/Layout';
 import { api, BASE_URL } from '../api';
 import { useApp } from '../AppContext';
+import { useAuth } from '../AuthContext';
 import { 
   Building2, UserCog, Mail, Receipt, HardDrive, 
   Save, RotateCcw, AlertTriangle, Eye, ImagePlus, Download
@@ -24,6 +25,7 @@ const DEFAULT_EXTRAS = {
 
 export default function SettingsPage() {
   const { t } = useApp();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('profile');
   
   // Core form data (Backend + LocalStorage Extras)
@@ -520,9 +522,11 @@ export default function SettingsPage() {
                 <button type="button" onClick={handleReset} disabled={!isDirty} className="px-6 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 rounded-xl text-sm font-bold transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                   <RotateCcw size={18} /> Reset
                 </button>
-                <button type="submit" disabled={!isDirty} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-sm font-bold shadow-lg shadow-amber-500/20 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
-                  <Save size={18} /> Save Settings
-                </button>
+                {user?.role === 'admin' && (
+                  <button type="submit" disabled={!isDirty} className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-sm font-bold shadow-lg shadow-amber-500/20 transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <Save size={18} /> Save Settings
+                  </button>
+                )}
               </div>
 
             </form>

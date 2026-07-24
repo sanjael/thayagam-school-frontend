@@ -13,8 +13,8 @@ const nav = [
   { to: '/fees', labelKey: 'feeStructure', icon: <CreditCard size={20} strokeWidth={2.5} /> },
   { to: '/payments', labelKey: 'payments', icon: <Receipt size={20} strokeWidth={2.5} /> },
   { to: '/reports', labelKey: 'reports', icon: <FileBarChart size={20} strokeWidth={2.5} /> },
-  { to: '/settings', labelKey: 'settings', icon: <Settings size={20} strokeWidth={2.5} />, adminOnly: true },
-  { to: '/audit-logs', labelKey: 'auditLogs', icon: <ShieldAlert size={20} strokeWidth={2.5} />, adminOnly: true },
+  { to: '/settings', labelKey: 'settings', icon: <Settings size={20} strokeWidth={2.5} /> },
+  { to: '/audit-logs', labelKey: 'auditLogs', icon: <ShieldAlert size={20} strokeWidth={2.5} /> },
 ];
 
 export default function Sidebar({ onClose }) {

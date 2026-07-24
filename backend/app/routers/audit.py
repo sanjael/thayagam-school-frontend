@@ -11,7 +11,7 @@ router = APIRouter(prefix="/audit-logs", tags=["Audit Logs"])
 @router.get("/", response_model=List[schemas.AuditLogOut])
 def get_audit_logs(
     db: Session = Depends(get_db),
-    current_user: models.User = Depends(require_role(["admin"]))
+    current_user: models.User = Depends(require_role(["admin", "accountant", "principal"]))
 ):
     logs = db.query(models.AuditLog).order_by(models.AuditLog.created_at.desc()).limit(100).all()
     
